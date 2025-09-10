@@ -2,9 +2,9 @@
 
 namespace Roberts\LaravelWallets;
 
+use Roberts\LaravelWallets\Commands\LaravelWalletsCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Roberts\LaravelWallets\Commands\LaravelWalletsCommand;
 
 class LaravelWalletsServiceProvider extends PackageServiceProvider
 {
