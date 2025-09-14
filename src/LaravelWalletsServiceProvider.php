@@ -19,7 +19,9 @@ class LaravelWalletsServiceProvider extends PackageServiceProvider
             ->name('laravel-wallets')
             ->hasConfigFile()
             ->hasViews()
-            ->hasMigration('create_laravel_wallets_table')
+            ->hasMigration('2025_08_16_000000_create_blockchains_table')
+            ->hasMigration('2025_08_16_000100_create_wallets_table')
+            ->hasMigration('2025_08_18_000200_create_key_releases_table')
             ->hasCommand(LaravelWalletsCommand::class);
     }
 }
