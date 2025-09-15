@@ -1,10 +1,10 @@
 <?php
 
-namespace Roberts\Web3Laravel\Database\Factories;
+namespace Roberts\LaravelWallets\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Roberts\Web3Laravel\Models\KeyRelease;
-use Roberts\Web3Laravel\Models\Wallet;
+use Roberts\LaravelWallets\Models\KeyRelease;
+use Roberts\LaravelWallets\Models\Wallet;
 
 /**
  * @extends Factory<KeyRelease>

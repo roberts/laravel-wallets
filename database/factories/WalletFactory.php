@@ -1,10 +1,10 @@
 <?php
 
-namespace Roberts\Web3Laravel\Database\Factories;
+namespace Roberts\LaravelWallets\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Roberts\Web3Laravel\Enums\WalletType;
-use Roberts\Web3Laravel\Models\Wallet;
+use Roberts\LaravelWallets\Enums\WalletType;
+use Roberts\LaravelWallets\Models\Wallet;
 
 /**
  * @extends Factory<Wallet>
