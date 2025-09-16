@@ -31,4 +31,3 @@ it('can create an ethereum wallet with an owner', function () {
         'protocol' => 'eth',
     ]);
 });
-

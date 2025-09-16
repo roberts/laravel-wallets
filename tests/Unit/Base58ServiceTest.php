@@ -3,7 +3,7 @@
 use Roberts\LaravelWallets\Services\Base58Service;
 
 it('encodes and decodes a string correctly', function () {
-    $service = new Base58Service();
+    $service = new Base58Service;
     $original = 'Hello World';
 
     $encoded = $service->encode($original);
@@ -14,7 +14,7 @@ it('encodes and decodes a string correctly', function () {
 });
 
 it('handles leading zero bytes', function () {
-    $service = new Base58Service();
+    $service = new Base58Service;
     $original = "\0\0Hello World";
 
     $encoded = $service->encode($original);
@@ -25,7 +25,7 @@ it('handles leading zero bytes', function () {
 });
 
 it('encodes and decodes a bitcoin address', function () {
-    $service = new Base58Service();
+    $service = new Base58Service;
     $hex = '00010966776006953D5567439E5E39F86A0D273BEED61967F6';
     $base58 = '16UwLL9Risc3QfPqBUvKofHmBQ7wMtjvM';
 

@@ -16,12 +16,12 @@ class Base58Service
 
         while ($value->isGreaterThan(0)) {
             [$value, $remainder] = $value->quotientAndRemainder($base);
-            $encoded = self::ALPHABET[$remainder->toInt()] . $encoded;
+            $encoded = self::ALPHABET[$remainder->toInt()].$encoded;
         }
 
         // Preserve leading zero bytes
         for ($i = 0; $i < strlen($bytes) && $bytes[$i] === "\0"; $i++) {
-            $encoded = '1' . $encoded;
+            $encoded = '1'.$encoded;
         }
 
         return $encoded;
@@ -46,14 +46,14 @@ class Base58Service
         $hex = $value->toBase(16);
 
         if (strlen($hex) % 2 !== 0) {
-            $hex = '0' . $hex;
+            $hex = '0'.$hex;
         }
 
         $decoded = hex2bin($hex);
 
         // Preserve leading '1's as zero bytes
         for ($i = 0; $i < strlen($encoded) && $encoded[$i] === '1'; $i++) {
-            $decoded = "\0" . $decoded;
+            $decoded = "\0".$decoded;
         }
 
         return $decoded;
