@@ -3,7 +3,7 @@
 use Roberts\LaravelWallets\Protocols\Ethereum\Client;
 
 it('generates a valid private key', function () {
-    $client = new Client();
+    $client = new Client;
     $privateKey = $client->generatePrivateKey();
 
     expect($privateKey)->toBeString()
@@ -11,7 +11,7 @@ it('generates a valid private key', function () {
 });
 
 it('derives a public key from a private key', function () {
-    $client = new Client();
+    $client = new Client;
     $privateKey = $client->generatePrivateKey();
     $publicKey = $client->derivePublicKey($privateKey);
 
@@ -21,7 +21,7 @@ it('derives a public key from a private key', function () {
 });
 
 it('derives an address from a public key', function () {
-    $client = new Client();
+    $client = new Client;
     $privateKey = $client->generatePrivateKey();
     $publicKey = $client->derivePublicKey($privateKey);
     $address = $client->deriveAddress($publicKey);

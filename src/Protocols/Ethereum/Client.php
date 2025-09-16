@@ -4,7 +4,6 @@ namespace Roberts\LaravelWallets\Protocols\Ethereum;
 
 use Elliptic\EC;
 use kornrunner\Keccak;
-use Roberts\LaravelWallets\Exceptions\InvalidPrivateKey;
 
 class Client
 {

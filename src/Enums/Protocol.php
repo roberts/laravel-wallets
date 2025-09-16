@@ -38,5 +38,4 @@ enum Protocol: string
     {
         return $this === self::SOL;
     }
-
 }
