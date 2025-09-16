@@ -11,7 +11,7 @@ class EthWallet implements WalletInterface
 
     public string $publicKey;
 
-    public string $privateKey;
+    private string $privateKey;
 
     public function __construct(string $address, string $publicKey, string $privateKey)
     {
