@@ -9,7 +9,7 @@ describe('Base58Service', function () {
 
     it('encodes and decodes strings correctly', function () {
         $original = 'Hello World';
-        
+
         $encoded = $this->service->encode($original);
         $decoded = $this->service->decode($encoded);
 
@@ -19,7 +19,7 @@ describe('Base58Service', function () {
 
     it('handles leading zero bytes', function () {
         $original = "\0\0Hello World";
-        
+
         $encoded = $this->service->encode($original);
         $decoded = $this->service->decode($encoded);
 

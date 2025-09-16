@@ -4,12 +4,12 @@ use Roberts\LaravelWallets\Services\KeccakService;
 
 describe('KeccakService', function () {
     beforeEach(function () {
-        $this->keccakService = new KeccakService();
+        $this->keccakService = new KeccakService;
     });
 
     it('can hash empty string correctly', function () {
         $result = $this->keccakService->hash('', 256);
-        
+
         // Official Ethereum Keccak-256 hash of empty string
         expect($result)->toBe('c5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470');
     });
@@ -32,7 +32,7 @@ describe('KeccakService', function () {
     it('has convenience keccak256 method', function () {
         $result1 = $this->keccakService->keccak256('hello');
         $result2 = $this->keccakService->hash('hello', 256);
-        
+
         expect($result1)->toBe($result2);
         expect(strlen($result1))->toBe(64); // 256 bits = 64 hex characters
     });
@@ -40,22 +40,22 @@ describe('KeccakService', function () {
     it('can hash binary data', function () {
         $binaryData = hex2bin('deadbeef');
         $result = $this->keccakService->hash($binaryData, 256);
-        
+
         expect($result)->toBeString();
         expect(strlen($result))->toBe(64);
         expect(ctype_xdigit($result))->toBeTrue();
-        
+
         // Test known binary hash (correct hash for 'deadbeef' hex data)
         expect($result)->toBe('d4fd4e189132273036449fc9e11198c739161b4c0116a9a2dccdfa1c492006f1');
     });
 
     it('produces consistent results', function () {
         $data = 'test data for consistency';
-        
+
         $result1 = $this->keccakService->hash($data, 256);
         $result2 = $this->keccakService->hash($data, 256);
         $result3 = $this->keccakService->keccak256($data);
-        
+
         expect($result1)->toBe($result2);
         expect($result1)->toBe($result3);
     });
@@ -71,10 +71,10 @@ describe('KeccakService', function () {
             str_repeat('a', 100),
             str_repeat('data', 50),
         ];
-        
+
         foreach ($inputs as $input) {
             $result = $this->keccakService->hash($input, 256);
-            
+
             expect($result)->toBeString();
             expect(strlen($result))->toBe(64);
             expect(ctype_xdigit($result))->toBeTrue();
@@ -83,17 +83,17 @@ describe('KeccakService', function () {
 
     it('can hash with different bit lengths', function () {
         $data = 'test';
-        
+
         $hash224 = $this->keccakService->hash($data, 224);
         $hash256 = $this->keccakService->hash($data, 256);
         $hash384 = $this->keccakService->hash($data, 384);
         $hash512 = $this->keccakService->hash($data, 512);
-        
+
         expect(strlen($hash224))->toBe(56); // 224 bits = 56 hex chars
         expect(strlen($hash256))->toBe(64); // 256 bits = 64 hex chars
         expect(strlen($hash384))->toBe(96); // 384 bits = 96 hex chars
         expect(strlen($hash512))->toBe(128); // 512 bits = 128 hex chars
-        
+
         // All should be different
         expect($hash224)->not->toBe($hash256);
         expect($hash256)->not->toBe($hash384);
@@ -104,7 +104,7 @@ describe('KeccakService', function () {
         $data = 'test';
         $hexResult = $this->keccakService->hash($data, 256);
         $binaryResult = $this->keccakService->hashBinary($data, 256);
-        
+
         expect(bin2hex($binaryResult))->toBe($hexResult);
         expect(strlen($binaryResult))->toBe(32); // 256 bits = 32 bytes
     });
@@ -112,14 +112,14 @@ describe('KeccakService', function () {
     it('works with ethereum address derivation', function () {
         // Test Ethereum address derivation pattern with known test vector
         // This is a known public key that should produce a specific Ethereum address
-        $publicKey = '04' . 
-            '79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798' .
+        $publicKey = '04'.
+            '79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798'.
             '483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8';
         $publicKeyBinary = hex2bin(substr($publicKey, 2)); // Remove '04' prefix
-        
+
         $hash = $this->keccakService->hashBinary($publicKeyBinary, 256);
-        $address = '0x' . bin2hex(substr($hash, -20)); // Last 20 bytes for Ethereum address
-        
+        $address = '0x'.bin2hex(substr($hash, -20)); // Last 20 bytes for Ethereum address
+
         // This should produce the address: 0x7e5f4552091a69125d5dfcb7b8c2659029395bdf
         expect($address)->toBe('0x7e5f4552091a69125d5dfcb7b8c2659029395bdf');
         expect($address)->toStartWith('0x');
@@ -148,10 +148,10 @@ describe('KeccakService', function () {
         $smartContractVectors = [
             // Function selector: first 4 bytes of keccac256("transfer(address,uint256)")
             'transfer(address,uint256)' => 'a9059cbb2ab09eb219583f4a59a5d0623ade346d962bcd4e46b11da047c9049b',
-            
+
             // Event signature: keccac256("Transfer(address,address,uint256)")
             'Transfer(address,address,uint256)' => 'ddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef',
-            
+
             // Common storage slot calculation inputs
             'balances' => 'a65b1ef8ee6544359221f3cf316f768360e83448109193bdcef77f52a79d95c4',
             'allowances' => '54bf4c436d6f8521e5c6189511c75075de702ad597ce22c1786275e8e5167ec7',

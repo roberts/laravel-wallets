@@ -8,12 +8,13 @@ use Roberts\LaravelWallets\Services\KeccakService;
 class Client
 {
     protected EC $ec;
+
     protected KeccakService $keccakService;
 
     public function __construct()
     {
         $this->ec = new EC('secp256k1');
-        $this->keccakService = new KeccakService();
+        $this->keccakService = new KeccakService;
     }
 
     public function generatePrivateKey(): string
