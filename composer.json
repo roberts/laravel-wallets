@@ -72,10 +72,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Roberts\\LaravelWallets\\LaravelWalletsServiceProvider"
+                "Roberts\\LaravelWallets\\WalletsServiceProvider"
             ],
             "aliases": {
-                "LaravelWallets": "Roberts\\LaravelWallets\\Facades\\LaravelWallets"
+                "Wallets": "Roberts\\LaravelWallets\\Facades\\Wallets"
             }
         }
     },

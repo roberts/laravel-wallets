@@ -10,12 +10,11 @@ return new class extends Migration
     {
         Schema::create('wallets', function (Blueprint $table) {
             $table->id();
+            $table->string('protocol', 25)->default('eth'); // BlockchainProtocol: eth|sol|btc|sui|xrp|ada|ton|hbar
             $table->string('address')->unique();
             $table->text('key')->nullable(); // encrypted private key (Crypt)
-            $table->string('wallet_type')->default('custodial'); // custodial, shared, external
+            $table->string('wallet_type', 25)->default('custodial'); // custodial, shared, external
             $table->foreignId('owner_id')->nullable()->constrained('users'); // fixed owner to users table
-            $table->string('protocol')->default('eth'); // BlockchainProtocol: eth|sol|btc|sui|xrp|ada|ton|hbar
-            $table->string('network')->nullable(); // mainnet, testnet, devnet, etc.
             // Multichain key info
             $table->text('public_key')->nullable();
             $table->string('derivation_path')->nullable();

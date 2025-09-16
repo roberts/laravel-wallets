@@ -5,12 +5,12 @@ namespace Roberts\LaravelWallets\Facades;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @see \Roberts\LaravelWallets\LaravelWallets
+ * @see \Roberts\LaravelWallets\Wallets
  */
-class LaravelWallets extends Facade
+class Wallets extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return \Roberts\LaravelWallets\LaravelWallets::class;
+        return 'wallets';
     }
 }

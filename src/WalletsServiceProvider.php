@@ -2,11 +2,11 @@
 
 namespace Roberts\LaravelWallets;
 
-use Roberts\LaravelWallets\Commands\LaravelWalletsCommand;
+use Roberts\LaravelWallets\Commands\WalletsCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
-class LaravelWalletsServiceProvider extends PackageServiceProvider
+class WalletsServiceProvider extends PackageServiceProvider
 {
     public function configurePackage(Package $package): void
     {
@@ -22,6 +22,6 @@ class LaravelWalletsServiceProvider extends PackageServiceProvider
             ->hasMigration('2025_08_16_000000_create_blockchains_table')
             ->hasMigration('2025_08_16_000100_create_wallets_table')
             ->hasMigration('2025_08_18_000200_create_key_releases_table')
-            ->hasCommand(LaravelWalletsCommand::class);
+            ->hasCommand(WalletsCommand::class);
     }
 }

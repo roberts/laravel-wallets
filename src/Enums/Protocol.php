@@ -2,7 +2,7 @@
 
 namespace Roberts\LaravelWallets\Enums;
 
-enum BlockchainProtocol: string
+enum Protocol: string
 {
     case ETH = 'eth';
     case SOL = 'sol';

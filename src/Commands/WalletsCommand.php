@@ -4,9 +4,9 @@ namespace Roberts\LaravelWallets\Commands;
 
 use Illuminate\Console\Command;
 
-class LaravelWalletsCommand extends Command
+class WalletsCommand extends Command
 {
-    public $signature = 'laravel-wallets';
+    public $signature = 'wallets';
 
     public $description = 'My command';
 
