@@ -13,7 +13,7 @@ class TestCase extends Orchestra
         parent::setUp();
 
         Factory::guessFactoryNamesUsing(
-            fn (string $modelName) => 'Roberts\\LaravelWallets\\Database\\Factories\\'.class_basename($modelName).'Factory'
+            fn (string $modelName) => 'Roberts\\LaravelWallets\\Tests\\Database\\Factories\\'.class_basename($modelName).'Factory'
         );
     }
 
@@ -28,10 +28,11 @@ class TestCase extends Orchestra
     {
         config()->set('database.default', 'testing');
 
-        /*
-         foreach (\Illuminate\Support\Facades\File::allFiles(__DIR__ . '/database/migrations') as $migration) {
-            (include $migration->getRealPath())->up();
-         }
-         */
+        // Manually run the migrations
+        $walletsMigration = include __DIR__.'/../database/migrations/2025_08_16_000100_create_wallets_table.php';
+        $walletsMigration->up();
+
+        $usersMigration = include __DIR__.'/database/migrations/create_users_table.php';
+        $usersMigration->up();
     }
 }
