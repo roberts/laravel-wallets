@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Roberts\LaravelWallets\Tests\User;
+use Roberts\LaravelWallets\Tests\TestUser;
 use Roberts\LaravelWallets\Wallets\EthWallet;
 
 uses(RefreshDatabase::class);
@@ -19,7 +19,8 @@ it('can create an ethereum wallet and save it to the database', function () {
 });
 
 it('can create an ethereum wallet with an owner', function () {
-    $user = User::factory()->create();
+    /** @var \Roberts\LaravelWallets\Tests\TestUser $user */
+    $user = TestUser::factory()->create();
 
     $wallet = EthWallet::create($user);
 
