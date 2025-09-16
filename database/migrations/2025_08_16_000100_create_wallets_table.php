@@ -13,7 +13,7 @@ return new class extends Migration
             $table->string('protocol', 25)->default('eth'); // BlockchainProtocol: eth|sol|btc|sui|xrp|ada|ton|hbar
             $table->string('address')->unique();
             $table->text('private_key')->nullable(); // encrypted private key (Crypt)
-            $table->string('wallet_type', 25)->default('custodial'); // custodial, shared, external
+            $table->string('wallet_type', 25)->default('external'); // custodial, shared, external
             $table->foreignId('owner_id')->nullable()->constrained('users'); // fixed owner to users table
             // Multichain key info
             $table->text('public_key')->nullable();

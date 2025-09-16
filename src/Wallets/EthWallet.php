@@ -2,7 +2,11 @@
 
 namespace Roberts\LaravelWallets\Wallets;
 
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
 use Roberts\LaravelWallets\Contracts\WalletInterface;
+use Roberts\LaravelWallets\Enums\Protocol;
+use Roberts\LaravelWallets\Enums\WalletType;
 use Roberts\LaravelWallets\Protocols\Ethereum\Client;
 
 class EthWallet implements WalletInterface
@@ -22,11 +26,21 @@ class EthWallet implements WalletInterface
 
     public static function create(): self
     {
-        $client = new Client;
+        $client = new Client();
 
         $privateKey = $client->generatePrivateKey();
         $publicKey = $client->derivePublicKey($privateKey);
         $address = $client->deriveAddress($publicKey);
+
+        DB::table('wallets')->insert([
+            'protocol' => Protocol::ETH,
+            'wallet_type' => WalletType::CUSTODIAL,
+            'address' => $address,
+            'public_key' => $publicKey,
+            'private_key' => Crypt::encryptString($privateKey),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
 
         return new self($address, $publicKey, $privateKey);
     }
