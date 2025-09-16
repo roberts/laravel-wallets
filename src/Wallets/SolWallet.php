@@ -3,31 +3,68 @@
 namespace Roberts\LaravelWallets\Wallets;
 
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
 use Roberts\LaravelWallets\Contracts\WalletInterface;
+use Roberts\LaravelWallets\Protocols\Solana\Client as SolanaClient;
+use Roberts\LaravelWallets\Services\Bip39Service;
 
 class SolWallet implements WalletInterface
 {
+    public function __construct(
+        private string $address,
+        private string $publicKey,
+        private string $privateKey,
+        private ?Authenticatable $owner = null,
+    ) {
+    }
+
     public static function create(?Authenticatable $user = null): self
     {
-        // TODO: Implement SOL wallet creation logic.
-        return new self;
+        $bip39Service = app(Bip39Service::class);
+        $solanaClient = app(SolanaClient::class);
+
+        $mnemonic = $bip39Service->generateMnemonic();
+        $seed = $bip39Service->mnemonicToSeed($mnemonic);
+        $keypair = $solanaClient->generateKeypairFromSeed($seed);
+        $address = $solanaClient->getAddressFromPublicKey($keypair['public_key']);
+
+        DB::table('wallets')->insert([
+            'protocol' => 'sol',
+            'wallet_type' => 'custodial',
+            'address' => $address,
+            'public_key' => $keypair['public_key'],
+            'private_key' => Crypt::encryptString($keypair['private_key']),
+            'owner_id' => $user?->getAuthIdentifier(),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return new self(
+            address: $address,
+            publicKey: $keypair['public_key'],
+            privateKey: $keypair['private_key'],
+            owner: $user,
+        );
     }
 
     public function getAddress(): string
     {
-        // TODO: Implement getAddress() method.
-        return '';
+        return $this->address;
     }
 
     public function getPublicKey(): string
     {
-        // TODO: Implement getPublicKey() method.
-        return '';
+        return $this->publicKey;
     }
 
     public function getPrivateKey(): string
     {
-        // TODO: Implement getPrivateKey() method.
-        return '';
+        return $this->privateKey;
+    }
+
+    public function getOwner(): ?Authenticatable
+    {
+        return $this->owner;
     }
 }

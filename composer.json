@@ -23,7 +23,7 @@
         "kornrunner/keccak": "^1.1",
         "roberts/laravel-singledb-tenancy": "^12.1",
         "roberts/support": "^12.1",
-        "simplito/elliptic-php": "^1.0",
+        "simplito/elliptic-php": "^1.0.12",
         "spatie/laravel-package-tools": "^1.92"
     },
     "require-dev": {

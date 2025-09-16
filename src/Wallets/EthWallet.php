@@ -18,11 +18,14 @@ class EthWallet implements WalletInterface
 
     private string $privateKey;
 
-    public function __construct(string $address, string $publicKey, string $privateKey)
+    private ?Authenticatable $owner;
+
+    public function __construct(string $address, string $publicKey, string $privateKey, ?Authenticatable $owner = null)
     {
         $this->address = $address;
         $this->publicKey = $publicKey;
         $this->privateKey = $privateKey;
+        $this->owner = $owner;
     }
 
     public static function create(?Authenticatable $user = null): self
@@ -44,7 +47,7 @@ class EthWallet implements WalletInterface
             'updated_at' => now(),
         ]);
 
-        return new self($address, $publicKey, $privateKey);
+        return new self($address, $publicKey, $privateKey, $user);
     }
 
     public function getAddress(): string
@@ -60,5 +63,10 @@ class EthWallet implements WalletInterface
     public function getPrivateKey(): string
     {
         return $this->privateKey;
+    }
+
+    public function getOwner(): ?Authenticatable
+    {
+        return $this->owner;
     }
 }
