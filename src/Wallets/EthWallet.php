@@ -27,7 +27,7 @@ class EthWallet implements WalletInterface
 
     public static function create(?Authenticatable $user = null): self
     {
-        $client = new Client();
+        $client = new Client;
 
         $privateKey = $client->generatePrivateKey();
         $publicKey = $client->derivePublicKey($privateKey);
