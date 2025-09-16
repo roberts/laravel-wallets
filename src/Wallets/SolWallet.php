@@ -1,6 +1,6 @@
 <?php
 
-namespace Roberts\LaravelWallets\Wallets;
+namespace Roberts\LaravelWallets;
 
 use Roberts\LaravelWallets\Contracts\WalletInterface;
 

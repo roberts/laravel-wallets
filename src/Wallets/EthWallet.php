@@ -3,30 +3,46 @@
 namespace Roberts\LaravelWallets\Wallets;
 
 use Roberts\LaravelWallets\Contracts\WalletInterface;
+use Roberts\LaravelWallets\Protocols\Ethereum\Client;
 
 class EthWallet implements WalletInterface
 {
+    public string $address;
+
+    public string $publicKey;
+
+    public string $privateKey;
+
+    public function __construct(string $address, string $publicKey, string $privateKey)
+    {
+        $this->address = $address;
+        $this->publicKey = $publicKey;
+        $this->privateKey = $privateKey;
+    }
+
     public static function create(): self
     {
-        // TODO: Implement ETH wallet creation logic.
-        return new self;
+        $client = new Client();
+
+        $privateKey = $client->generatePrivateKey();
+        $publicKey = $client->derivePublicKey($privateKey);
+        $address = $client->deriveAddress($publicKey);
+
+        return new self($address, $publicKey, $privateKey);
     }
 
     public function getAddress(): string
     {
-        // TODO: Implement getAddress() method.
-        return '';
+        return $this->address;
     }
 
     public function getPublicKey(): string
     {
-        // TODO: Implement getPublicKey() method.
-        return '';
+        return $this->publicKey;
     }
 
     public function getPrivateKey(): string
     {
-        // TODO: Implement getPrivateKey() method.
-        return '';
+        return $this->privateKey;
     }
 }

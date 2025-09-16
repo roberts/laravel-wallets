@@ -4,7 +4,7 @@ namespace Roberts\LaravelWallets\Tests;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchestra\Testbench\TestCase as Orchestra;
-use Roberts\LaravelWallets\LaravelWalletsServiceProvider;
+use Roberts\LaravelWallets\WalletsServiceProvider;
 
 class TestCase extends Orchestra
 {
@@ -20,7 +20,7 @@ class TestCase extends Orchestra
     protected function getPackageProviders($app)
     {
         return [
-            LaravelWalletsServiceProvider::class,
+            WalletsServiceProvider::class,
         ];
     }
 
