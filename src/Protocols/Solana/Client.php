@@ -6,14 +6,12 @@ use Roberts\LaravelWallets\Services\Base58Service;
 
 class Client
 {
-    public function __construct(private Base58Service $base58Service)
-    {
-    }
+    public function __construct(private Base58Service $base58Service) {}
 
     /**
      * Generates a Solana keypair from a 64-byte seed.
      *
-     * @param string $seed The 64-byte seed.
+     * @param  string  $seed  The 64-byte seed.
      * @return array An array containing the public key and private key.
      */
     public function generateKeypairFromSeed(string $seed): array
@@ -34,9 +32,6 @@ class Client
     /**
      * Get the address from a public key.
      * In Solana, the address is the Base58 encoded public key.
-     *
-     * @param string $publicKey
-     * @return string
      */
     public function getAddressFromPublicKey(string $publicKey): string
     {

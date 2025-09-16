@@ -16,8 +16,7 @@ class SolWallet implements WalletInterface
         private string $publicKey,
         private string $privateKey,
         private ?Authenticatable $owner = null,
-    ) {
-    }
+    ) {}
 
     public static function create(?Authenticatable $user = null): self
     {

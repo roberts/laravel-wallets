@@ -1,12 +1,12 @@
 <?php
 
 use Roberts\LaravelWallets\Protocols\Solana\Client;
-use Roberts\LaravelWallets\Services\Bip39Service;
 use Roberts\LaravelWallets\Services\Base58Service;
+use Roberts\LaravelWallets\Services\Bip39Service;
 
 it('generates a keypair from a seed', function () {
-    $bip39Service = new Bip39Service();
-    $base58Service = new Base58Service();
+    $bip39Service = new Bip39Service;
+    $base58Service = new Base58Service;
     $client = new Client($base58Service);
 
     $mnemonic = 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about';
@@ -21,7 +21,7 @@ it('generates a keypair from a seed', function () {
 });
 
 it('derives an address from a public key', function () {
-    $base58Service = new Base58Service();
+    $base58Service = new Base58Service;
     $client = new Client($base58Service);
     $publicKey = random_bytes(32);
 
