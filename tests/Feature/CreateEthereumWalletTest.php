@@ -6,29 +6,31 @@ use Roberts\LaravelWallets\Wallets\EthWallet;
 
 uses(RefreshDatabase::class);
 
-it('can create an ethereum wallet and save it to the database', function () {
-    $wallet = EthWallet::create();
+describe('Ethereum Wallet Creation', function () {
+    it('creates wallet and saves to database', function () {
+        $wallet = EthWallet::create();
 
-    expect($wallet)->toBeInstanceOf(EthWallet::class);
-    expect($wallet->getAddress())->toStartWith('0x')->toHaveLength(42);
+        expect($wallet)->toBeInstanceOf(EthWallet::class)
+            ->and($wallet->getAddress())->toStartWith('0x')->toHaveLength(42);
 
-    $this->assertDatabaseHas('wallets', [
-        'address' => $wallet->getAddress(),
-        'protocol' => 'eth',
-    ]);
-});
+        $this->assertDatabaseHas('wallets', [
+            'address' => $wallet->getAddress(),
+            'protocol' => 'eth',
+        ]);
+    });
 
-it('can create an ethereum wallet with an owner', function () {
-    /** @var \Roberts\LaravelWallets\Tests\TestUser $user */
-    $user = TestUser::factory()->create();
+    it('creates wallet with owner', function () {
+        /** @var \Roberts\LaravelWallets\Tests\TestUser $user */
+        $user = TestUser::factory()->create();
 
-    $wallet = EthWallet::create($user);
+        $wallet = EthWallet::create($user);
 
-    expect($wallet)->toBeInstanceOf(EthWallet::class);
-    expect($wallet->getAddress())->toStartWith('0x')->toHaveLength(42);
+        expect($wallet)->toBeInstanceOf(EthWallet::class)
+            ->and($wallet->getAddress())->toStartWith('0x')->toHaveLength(42);
 
-    $this->assertDatabaseHas('wallets', [
-        'owner_id' => $user->id,
-        'protocol' => 'eth',
-    ]);
+        $this->assertDatabaseHas('wallets', [
+            'owner_id' => $user->id,
+            'protocol' => 'eth',
+        ]);
+    });
 });

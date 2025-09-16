@@ -3,15 +3,17 @@
 namespace Roberts\LaravelWallets\Protocols\Ethereum;
 
 use Elliptic\EC;
-use kornrunner\Keccak;
+use Roberts\LaravelWallets\Services\KeccakService;
 
 class Client
 {
     protected EC $ec;
+    protected KeccakService $keccakService;
 
     public function __construct()
     {
         $this->ec = new EC('secp256k1');
+        $this->keccakService = new KeccakService();
     }
 
     public function generatePrivateKey(): string
@@ -30,7 +32,7 @@ class Client
 
     public function deriveAddress(string $publicKey): string
     {
-        $hash = Keccak::hash(substr(hex2bin($publicKey), 1), 256);
+        $hash = $this->keccakService->hash(substr(hex2bin($publicKey), 1), 256);
 
         return '0x'.substr($hash, -40);
     }

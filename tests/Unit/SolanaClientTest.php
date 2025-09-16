@@ -4,29 +4,31 @@ use Roberts\LaravelWallets\Protocols\Solana\Client;
 use Roberts\LaravelWallets\Services\Base58Service;
 use Roberts\LaravelWallets\Services\Bip39Service;
 
-it('generates a keypair from a seed', function () {
-    $bip39Service = new Bip39Service;
-    $base58Service = new Base58Service;
-    $client = new Client($base58Service);
+describe('SolanaClient', function () {
+    beforeEach(function () {
+        $this->base58Service = new Base58Service;
+        $this->bip39Service = new Bip39Service;
+        $this->client = new Client($this->base58Service);
+    });
 
-    $mnemonic = 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about';
-    $seed = $bip39Service->mnemonicToSeed($mnemonic);
+    it('generates keypair from seed', function () {
+        $mnemonic = 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about';
+        $seed = $this->bip39Service->mnemonicToSeed($mnemonic);
 
-    $keypair = $client->generateKeypairFromSeed($seed);
+        $keypair = $this->client->generateKeypairFromSeed($seed);
 
-    expect($keypair)->toBeArray();
-    expect($keypair)->toHaveKeys(['public_key', 'private_key']);
-    expect(strlen($keypair['public_key']))->toBe(32);
-    expect(strlen($keypair['private_key']))->toBe(64);
-});
+        expect($keypair)->toBeArray()
+            ->toHaveKeys(['public_key', 'private_key'])
+            ->and(strlen($keypair['public_key']))->toBe(32)
+            ->and(strlen($keypair['private_key']))->toBe(64);
+    });
 
-it('derives an address from a public key', function () {
-    $base58Service = new Base58Service;
-    $client = new Client($base58Service);
-    $publicKey = random_bytes(32);
+    it('derives address from public key', function () {
+        $publicKey = random_bytes(32);
+        $expectedAddress = $this->base58Service->encode($publicKey);
 
-    $address = $client->getAddressFromPublicKey($publicKey);
-    $expectedAddress = $base58Service->encode($publicKey);
+        $address = $this->client->getAddressFromPublicKey($publicKey);
 
-    expect($address)->toBe($expectedAddress);
+        expect($address)->toBe($expectedAddress);
+    });
 });
