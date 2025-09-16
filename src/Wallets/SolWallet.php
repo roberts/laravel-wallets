@@ -1,12 +1,13 @@
 <?php
 
-namespace Roberts\LaravelWallets;
+namespace Roberts\LaravelWallets\Wallets;
 
+use Illuminate\Contracts\Auth\Authenticatable;
 use Roberts\LaravelWallets\Contracts\WalletInterface;
 
 class SolWallet implements WalletInterface
 {
-    public static function create(): self
+    public static function create(?Authenticatable $user = null): self
     {
         // TODO: Implement SOL wallet creation logic.
         return new self;

@@ -2,6 +2,7 @@
 
 namespace Roberts\LaravelWallets\Wallets;
 
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Roberts\LaravelWallets\Contracts\WalletInterface;
@@ -24,7 +25,7 @@ class EthWallet implements WalletInterface
         $this->privateKey = $privateKey;
     }
 
-    public static function create(): self
+    public static function create(?Authenticatable $user = null): self
     {
         $client = new Client();
 
@@ -38,6 +39,7 @@ class EthWallet implements WalletInterface
             'address' => $address,
             'public_key' => $publicKey,
             'private_key' => Crypt::encryptString($privateKey),
+            'owner_id' => $user?->getAuthIdentifier(),
             'created_at' => now(),
             'updated_at' => now(),
         ]);
