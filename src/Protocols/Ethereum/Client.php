@@ -33,7 +33,12 @@ class Client
 
     public function deriveAddress(string $publicKey): string
     {
-        $hash = $this->keccakService->hash(substr(hex2bin($publicKey), 1), 256);
+        $binaryKey = hex2bin($publicKey);
+        if ($binaryKey === false) {
+            throw new \InvalidArgumentException('Invalid hexadecimal public key');
+        }
+        
+        $hash = $this->keccakService->hash(substr($binaryKey, 1), 256);
 
         return '0x'.substr($hash, -40);
     }

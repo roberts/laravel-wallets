@@ -50,6 +50,9 @@ class Base58Service
         }
 
         $decoded = hex2bin($hex);
+        if ($decoded === false) {
+            throw new \InvalidArgumentException('Failed to decode hexadecimal string');
+        }
 
         // Preserve leading '1's as zero bytes
         for ($i = 0; $i < strlen($encoded) && $encoded[$i] === '1'; $i++) {

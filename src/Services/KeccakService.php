@@ -41,7 +41,12 @@ class KeccakService
     public function hashBinary(string $input, int $outputLength = 256): string
     {
         $hexHash = $this->hash($input, $outputLength);
+        $binary = hex2bin($hexHash);
+        
+        if ($binary === false) {
+            throw new \RuntimeException('Failed to convert hex hash to binary');
+        }
 
-        return hex2bin($hexHash);
+        return $binary;
     }
 }

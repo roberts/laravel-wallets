@@ -12,7 +12,7 @@ class Client
      * Generates a Solana keypair from a 64-byte seed.
      *
      * @param  string  $seed  The 64-byte seed.
-     * @return array An array containing the public key and private key.
+     * @return array{public_key: string, private_key: string} An array containing the public key and private key.
      */
     public function generateKeypairFromSeed(string $seed): array
     {

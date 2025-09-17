@@ -6,6 +6,7 @@ use Normalizer;
 
 class Bip39Service
 {
+    /** @var array<int, string> */
     private array $wordlist;
 
     public function __construct()
@@ -19,7 +20,12 @@ class Bip39Service
             throw new \InvalidArgumentException('Strength must be a multiple of 32 between 128 and 256.');
         }
 
-        $entropy = random_bytes($strength / 8);
+        $entropyLength = (int) ($strength / 8);
+        if ($entropyLength <= 0) {
+            throw new \InvalidArgumentException('Invalid entropy length calculated.');
+        }
+        
+        $entropy = random_bytes($entropyLength);
         $checksum = hash('sha256', $entropy, true);
 
         $entropyBits = '';
@@ -27,12 +33,12 @@ class Bip39Service
             $entropyBits .= str_pad(decbin(ord($byte)), 8, '0', STR_PAD_LEFT);
         }
 
-        $checksumLength = $strength / 32;
+        $checksumLength = (int) ($strength / 32);
         $checksumBits = '';
         foreach (str_split(substr($checksum, 0, (int) ceil($checksumLength / 8))) as $byte) {
             $checksumBits .= str_pad(decbin(ord($byte)), 8, '0', STR_PAD_LEFT);
         }
-        $checksumBits = substr($checksumBits, 0, $checksumLength);
+        $checksumBits = substr($checksumBits, 0, (int) $checksumLength);
 
         $bits = $entropyBits.$checksumBits;
         $binaryChunks = str_split($bits, 11);
