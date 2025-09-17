@@ -6,6 +6,8 @@ use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Roberts\LaravelWallets\Contracts\WalletInterface;
+use Roberts\LaravelWallets\Enums\Protocol;
+use Roberts\LaravelWallets\Enums\WalletType;
 use Roberts\LaravelWallets\Protocols\Solana\Client as SolanaClient;
 use Roberts\LaravelWallets\Services\Bip39Service;
 
@@ -29,8 +31,8 @@ class SolWallet implements WalletInterface
         $address = $solanaClient->getAddressFromPublicKey($keypair['public_key']);
 
         DB::table('wallets')->insert([
-            'protocol' => 'sol',
-            'wallet_type' => 'custodial',
+            'protocol' => Protocol::ETH,
+            'wallet_type' => WalletType::CUSTODIAL,
             'address' => $address,
             'public_key' => $keypair['public_key'],
             'private_key' => Crypt::encryptString($keypair['private_key']),
