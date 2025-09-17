@@ -16,6 +16,13 @@ class Client
      */
     public function generateKeypairFromSeed(string $seed): array
     {
+        if (!extension_loaded('sodium')) {
+            throw new \RuntimeException(
+                'The sodium PHP extension is required for Solana wallet operations. ' .
+                'Please install the sodium extension: https://www.php.net/manual/en/sodium.installation.php'
+            );
+        }
+
         if (strlen($seed) !== 64) {
             throw new \InvalidArgumentException('Seed must be 64 bytes long.');
         }

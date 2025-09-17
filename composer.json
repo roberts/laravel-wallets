@@ -18,6 +18,7 @@
     "require": {
         "php": "^8.4",
         "ext-gmp": "*",
+        "ext-sodium": "*",
         "brick/math": "^0.14.0",
         "filament/filament": "^4.0.1",
         "kornrunner/keccak": "^1.1",
