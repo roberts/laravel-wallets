@@ -12,7 +12,5 @@ interface WalletInterface
 
     public function getPublicKey(): string;
 
-    public function getPrivateKey(): string;
-
     public function getOwner(): ?Authenticatable;
 }

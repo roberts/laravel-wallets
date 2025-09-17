@@ -3,9 +3,8 @@
 namespace Roberts\LaravelWallets\Wallets;
 
 use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Facades\DB;
 use Roberts\LaravelWallets\Contracts\WalletInterface;
+use Roberts\LaravelWallets\Concerns\ManagesWalletPersistence;
 use Roberts\LaravelWallets\Enums\Protocol;
 use Roberts\LaravelWallets\Enums\WalletType;
 use Roberts\LaravelWallets\Protocols\Solana\Client as SolanaClient;
@@ -13,6 +12,8 @@ use Roberts\LaravelWallets\Services\Bip39Service;
 
 class SolWallet implements WalletInterface
 {
+    use ManagesWalletPersistence;
+
     public function __construct(
         private string $address,
         private string $publicKey,
@@ -30,16 +31,14 @@ class SolWallet implements WalletInterface
         $keypair = $solanaClient->generateKeypairFromSeed($seed);
         $address = $solanaClient->getAddressFromPublicKey($keypair['public_key']);
 
-        DB::table('wallets')->insert([
-            'protocol' => Protocol::SOL,
-            'wallet_type' => WalletType::CUSTODIAL,
-            'address' => $address,
-            'public_key' => $keypair['public_key'],
-            'private_key' => Crypt::encryptString($keypair['private_key']),
-            'owner_id' => $user?->getAuthIdentifier(),
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        static::persist(
+            Protocol::SOL,
+            WalletType::CUSTODIAL,
+            $address,
+            $keypair['public_key'],
+            $keypair['private_key'],
+            $user
+        );
 
         return new self(
             address: $address,
@@ -57,11 +56,6 @@ class SolWallet implements WalletInterface
     public function getPublicKey(): string
     {
         return $this->publicKey;
-    }
-
-    public function getPrivateKey(): string
-    {
-        return $this->privateKey;
     }
 
     public function getOwner(): ?Authenticatable
