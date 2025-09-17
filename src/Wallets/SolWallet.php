@@ -14,12 +14,24 @@ class SolWallet implements WalletInterface
 {
     use ManagesWalletPersistence;
 
-    public function __construct(
-        private string $address,
-        private string $publicKey,
-        private string $privateKey,
-        private ?Authenticatable $owner = null,
-    ) {}
+    public string $address;
+
+    public string $publicKey;
+
+    /**
+     * @phpstan-ignore property.onlyWritten
+     */
+    private string $privateKey;
+
+    private ?Authenticatable $owner;
+
+    public function __construct(string $address, string $publicKey, string $privateKey, ?Authenticatable $owner = null)
+    {
+        $this->address = $address;
+        $this->publicKey = $publicKey;
+        $this->privateKey = $privateKey;
+        $this->owner = $owner;
+    }
 
     public static function create(?Authenticatable $user = null): self
     {

@@ -17,6 +17,9 @@ class EthWallet implements WalletInterface
 
     public string $publicKey;
 
+    /**
+     * @phpstan-ignore property.onlyWritten
+     */
     private string $privateKey;
 
     private ?Authenticatable $owner;
