@@ -14,8 +14,13 @@ class TestCase extends Orchestra
         parent::setUp();
 
         Factory::guessFactoryNamesUsing(
-            fn (string $modelName) => 'Roberts\\LaravelWallets\\Tests\\Factories\\'.class_basename($modelName).'Factory'
+            fn (string $modelName) => 'Roberts\\LaravelWallets\\Database\\Factories\\'.class_basename($modelName).'Factory'
         );
+
+        // Seed the eth chains
+        include_once __DIR__.'/../database/seeders/EthChainSeeder.php';
+        $seeder = new \Database\Seeders\EthChainSeeder;
+        $seeder->run();
     }
 
     protected function getPackageProviders($app)
@@ -35,6 +40,10 @@ class TestCase extends Orchestra
         // Run the wallets migration
         $walletsMigration = include __DIR__.'/../database/migrations/2025_08_16_000100_create_wallets_table.php';
         $walletsMigration->up();
+
+        // Run the ethchains migration
+        $ethchainsMigration = include __DIR__.'/../database/migrations/2025_08_16_000000_create_eth_chains_table.php';
+        $ethchainsMigration->up();
 
         // Create users table for testing
         $app['db']->connection()->getSchemaBuilder()->create('users', function ($table) {

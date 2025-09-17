@@ -53,7 +53,8 @@
     "autoload": {
         "psr-4": {
             "Roberts\\LaravelWallets\\": "src/",
-            "Roberts\\LaravelWallets\\Database\\Factories\\": "database/factories/"
+            "Roberts\\LaravelWallets\\Database\\Factories\\": "database/factories/",
+            "Roberts\\LaravelWallets\\Database\\Seeders\\": "database/seeders/"
         }
     },
     "autoload-dev": {

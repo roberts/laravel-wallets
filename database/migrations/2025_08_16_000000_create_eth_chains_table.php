@@ -8,14 +8,13 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('blockchains', function (Blueprint $table) {
+        Schema::create('eth_chains', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('abbreviation', 16); // e.g., ETH, BASE
-            $table->unsignedBigInteger('chain_id'); // EVM chain id
+            $table->unsignedBigInteger('chain_id')->unique(); // EVM chain id
             $table->string('rpc'); // primary RPC URL
             $table->string('scanner')->nullable(); // block explorer base URL
-            $table->string('protocol')->default('evm'); // evm | solana
 
             $table->boolean('supports_eip1559')->default(true);
             $table->string('native_symbol', 16)->default('ETH');
@@ -24,7 +23,6 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
             $table->boolean('is_default')->default(false);
             $table->timestamps();
-            $table->unique(['chain_id']);
         });
     }
 };

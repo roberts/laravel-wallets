@@ -40,9 +40,12 @@ trait ManagesExternalWallet
 
     /**
      * Create or find existing external wallet in database.
+     * 
+     * @return array{address: string, public_key: string}
      */
     protected static function firstOrCreateExternalWallet(Protocol $protocol, string $address, string $publicKey, ?Authenticatable $user): array
     {
+        /** @var \stdClass|null $existingRecord */
         $existingRecord = DB::table('wallets')
             ->where('protocol', $protocol)
             ->where('address', $address)
@@ -51,8 +54,8 @@ trait ManagesExternalWallet
 
         if ($existingRecord) {
             return [
-                'address' => $existingRecord->address,
-                'public_key' => $existingRecord->public_key,
+                'address' => (string) $existingRecord->address,
+                'public_key' => (string) $existingRecord->public_key,
             ];
         }
 
