@@ -31,7 +31,7 @@ class SolWallet implements WalletInterface
         $address = $solanaClient->getAddressFromPublicKey($keypair['public_key']);
 
         DB::table('wallets')->insert([
-            'protocol' => Protocol::ETH,
+            'protocol' => Protocol::SOL,
             'wallet_type' => WalletType::CUSTODIAL,
             'address' => $address,
             'public_key' => $keypair['public_key'],
