@@ -27,17 +27,24 @@
 - Phase 3-4: Implementation execution (manual or via tools)
 
 ## Summary
-This plan outlines the refactoring of the wallet creation and storage mechanism to support multiple blockchains, starting with Ethereum and Solana. The core goal is to establish a unified, extensible, and secure system that adheres to DRY principles and is backed by a comprehensive test suite, following a Test-Driven Development (TDD) approach as mandated by the project constitution.
+This plan outlines the refactoring of the wallet creation and storage mechanism to support multiple blockchains using a two-table architecture, starting with Ethereum and Solana. The system separates concerns between a global blockchain address registry (`wallets` table) and ownership/control records (`wallet_owners` table). This design enables implicit watch relationships for external wallets while maintaining clear control boundaries for custodial wallets. The core goal is to establish a unified, extensible, and secure system that adheres to DRY principles and is backed by a comprehensive test suite, following a Test-Driven Development (TDD) approach as mandated by the project constitution.
 
 ## Technical Context
 **Language/Version**: PHP ^8.4 (from `composer.json`)
 **Primary Dependencies**: `laravel/framework`, `spatie/laravel-package-tools`, `roberts/laravel-singledb-tenancy`, `kornrunner/keccak`, `web3p/web3.php`, `solana-php/solana-sdk`
-**Storage**: Database (via Laravel Eloquent)
+**Storage**: Database (via Laravel Eloquent) - Two-table architecture: `wallets` (global registry) + `wallet_owners` (control records)
 **Testing**: Pest (TDD is mandatory)
 **Target Platform**: Laravel applications
 **Project Type**: Single project (Laravel package)
-**Constraints**: Must follow DRY principles and be extensible for future blockchains.
+**Constraints**: Must follow DRY principles and be extensible for future blockchains. Two-table design enables global address uniqueness with tenant-scoped control.
 **Scale/Scope**: Initial support for Ethereum and Solana. The design should accommodate adding more protocols.
+
+### Architectural Decisions
+- **Two-Table Design**: `wallets` table serves as global blockchain address registry (never deleted), `wallet_owners` table contains control/ownership records with private keys (deletable)
+- **Implicit Watch Relationships**: External wallets exist in `wallets` table only, enabling all tenants to watch without explicit relationships
+- **Control Type Enum**: `custodial` (system-generated with keys), `external` (imported watch-only), `shared` (multi-signature)
+- **Global Address Uniqueness**: Unique constraint on (protocol, address) prevents duplicate blockchain addresses
+- **firstOrCreate Pattern**: External wallet imports use firstOrCreate to prevent duplicates while enabling multi-tenant watching
 
 ### Unresolved Questions from Spec
 - **FR-007**: What authentication/authorization mechanism should protect private key access?
@@ -111,21 +118,27 @@ tests/
 *Prerequisites: research.md complete*
 
 1. **Extract entities from feature spec** → `data-model.md`:
-   - Define the `Wallet` model schema, including fields for `address`, `encrypted_private_key`, `protocol`, and `tenant_id`.
-   - Define the relationship between `Wallet` and the `User` (or other ownable) model.
+   - Define the two-table architecture: `wallets` table (global address registry) and `wallet_owners` table (control/ownership records)
+   - Define the `Wallet` model schema with fields for `protocol`, `address`, `control_type`, and `metadata`. Global uniqueness on (protocol, address).
+   - Define the `WalletOwner` model schema with fields for `wallet_id`, `tenant_id`, `owner_id`, `owner_type`, and `encrypted_private_key`.
+   - Define relationships between `Wallet`, `WalletOwner`, and User models enabling both controlled and watch-only access patterns.
+   - Document the implicit watch relationship pattern (wallets without corresponding wallet_owners records).
 
 2. **Generate API contracts** from functional requirements:
-   - Define PHP interfaces for the wallet creation and management system.
+   - Define PHP interfaces for the wallet creation and management system supporting both custodial and watch-only patterns.
    - `WalletAdapterInterface`: Defines methods like `createWallet()`, `getAddress()`, `getPrivateKey()`.
-   - `WalletServiceInterface`: Defines the public-facing API for the package, e.g., `create(Protocol $protocol, Model $owner)`.
+   - `WalletServiceInterface`: Defines the public-facing API including `createCustodialWallet()` and `watchExternalWallet()` methods.
    - Output these interfaces to `/contracts/`.
 
 3. **Generate contract tests** from contracts:
-   - Create Pest tests for the defined interfaces to ensure any implementation will adhere to the contract. These will initially fail.
+   - Create Pest tests for the defined interfaces to ensure any implementation will adhere to the two-table contract pattern.
+   - Include tests for both custodial wallet creation (both tables) and external wallet watching (wallets table only).
 
 4. **Extract test scenarios** from user stories:
-   - Create feature tests in Pest that follow the user stories (e.g., creating an ETH wallet, creating a SOL wallet).
-   - A `quickstart.md` will be generated to demonstrate the primary usage patterns based on these tests.
+   - Create feature tests in Pest for custodial wallet creation (ETH/SOL) asserting both wallets and wallet_owners records.
+   - Create feature tests for external wallet watching using firstOrCreate pattern.
+   - Create unit tests for both Wallet and WalletOwner models and their relationships.
+   - A `quickstart.md` will demonstrate both custodial creation and external watching patterns.
 
 5. **Update agent file incrementally** (O(1) operation):
    - Run `.specify/scripts/bash/update-agent-context.sh copilot` for your AI assistant
@@ -135,25 +148,28 @@ tests/
    - Keep under 150 lines for token efficiency
    - Output to repository root
 
-**Output**: data-model.md, /contracts/*, failing tests, quickstart.md, agent-specific file
+**Output**: data-model.md (two-table design), /contracts/*, failing tests (custodial + watch-only patterns), quickstart.md (both usage patterns), agent-specific file
 
 ## Phase 2: Task Planning Approach
 *This section describes what the /tasks command will do - DO NOT execute during /plan*
 
 **Task Generation Strategy**:
 - Load `.specify/templates/tasks-template.md` as base
-- Generate tasks from Phase 1 design docs (contracts, data model, quickstart)
+- Generate tasks from Phase 1 design docs (contracts, two-table data model, quickstart patterns)
+- Each table → migration creation task
+- Each model → model creation + unit test task [P] 
 - Each contract → contract test task [P]
-- Each entity → model creation task [P] 
-- Each user story → integration test task
+- Each user story → integration test task (custodial creation + external watching)
 - Implementation tasks to make tests pass
+- Service layer tasks for both custodial and watch-only functionality
 
 **Ordering Strategy**:
 - TDD order: Tests before implementation 
-- Dependency order: Models before services before UI
-- Mark [P] for parallel execution (independent files)
+- Dependency order: Migrations → Models → Services → Integration
+- Two-table dependencies: wallets table → wallet_owners table → models → relationships
+- Mark [P] for parallel execution (independent files/tests)
 
-**Estimated Output**: 25-30 numbered, ordered tasks in tasks.md
+**Estimated Output**: 30-35 numbered, ordered tasks in tasks.md (increased from single-table due to two-table complexity)
 
 **IMPORTANT**: This phase is executed by the /tasks command, NOT by /plan
 
