@@ -1,50 +1,47 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+# Laravel Wallets Package Constitution
 
-## Core Principles
+## 1. Package Overview
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+This document outlines the requirements for a Laravel PHP package designed to manage cryptocurrency wallets on multiple blockchains. The package will be utilized in Laravel web applications, particularly those where AI agents control wallets or that function as token and NFT deployers. The deployer-specific logic will reside in a separate package that depends on this one.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+## 2. Core Functionality
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+The package must provide the following core features:
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+-   **Wallet Management:** Programmatic creation of new wallets for supported blockchains.
+-   **Native Token Transactions:** Ability to send the native token of a given blockchain (e.g., ETH, SOL).
+-   **Contract Storage:** A system to store and manage smart contract addresses and their associated details (like ABI for Ethereum).
+-   **Token & NFT Details:** Functionality to query contract details to get information about specific tokens (ERC-20, SPL) and NFTs (ERC-721, ERC-1155, Metaplex).
+-   **Token & NFT Transfers:** Methods to facilitate the transfer of tokens and NFTs between wallets.
+-   **Holder Snapshots:** A feature to take a snapshot of all wallet addresses holding a specific token or NFT at a given point in time.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+## 3. Blockchain Support
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+-   **Initial Chains:** The package must launch with support for:
+    -   Ethereum and EVM-compatible chains.
+    -   Solana.
+-   **Extensibility:** The architecture must be flexible to allow for the seamless addition of other Layer 1 blockchains in the future. A driver-based or strategy pattern approach is recommended, where each blockchain has its own implementation of a common interface for core functionalities.
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+## 4. Database Schema
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+The database tables must be designed with flexibility to store data from various blockchains. The core tables should include:
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+-   `wallets`: To store wallet addresses, encrypted private keys/seed phrases, and the associated blockchain identifier.
+-   `contracts`: To store contract addresses, metadata (like ABI), and the blockchain identifier.
+-   `transactions`: A log of all outgoing and incoming transactions, with a flexible `meta` column to store chain-specific data.
 
-## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
+The schema should be designed to work with the `roberts/laravel-singledb-tenancy` package.
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+## 5. Technical Stack & Dependencies
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+-   **Framework:** Laravel
+-   **Language:** PHP
+-   **Testing:** Pest v4.1 will be used for all tests.
+-   **Multi-Tenancy:** The package must integrate with `roberts/laravel-singledb-tenancy` to ensure data is scoped to the correct tenant.
+
+## 6. Exclusions
+
+-   This package should **not** include any logic related to deploying new smart contracts. That functionality will be handled by a separate, dependent package.
+-   User interface components are outside the scope of this package. It should provide a backend API only.
+
+**Version**: 1.0.0 | **Ratified**: 2025-09-18 | **Last Amended**: 2025-09-18
