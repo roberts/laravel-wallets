@@ -1,30 +1,37 @@
-# Tasks: Wallet Creation & Storage Refactor (Two-Table Architecture)
+# Tasks: Wallet Creation & Sto- [x] Update ManagesExternalWallet Trait
+  - Update src/Concerns/ManagesExternalWallet.php to work with new two-table architecture
+- [x] Update ManagesWalletPersistence Trait
+  - Update src/Concerns/ManagesWalletPersistence.php to handle two-table persistence logicage Refactor (Two-Table Architecture)
 
 **Input**: Design documents from `/Users/drewroberts/Code/laravel-wallets/specs/001-review-refactor-the/`
 **Prerequisites**: plan.md, research.md, data-model.md, contracts/, quickstart.md
 
 ## Phase 3.1: Setup & Configuration
-- [ ] T001 [P] Install dependencies: `composer require web3p/web3.php solana-php/solana-sdk`.
-- [ ] T002 [P] Create the `Protocol` enum in `src/Enums/Protocol.php` with cases for `ETH` and `SOL`.
-- [ ] T003 [P] Create the `ControlType` enum in `src/Enums/ControlType.php` with cases for `custodial`, `external`, and `shared`.
-- [ ] T004 Create the configuration file `config/wallets.php` based on the decisions in `research.md`. This file will define the drivers for the wallet manager.
+- [x] T001 [P] Install dependencies: `composer require web3p/web3.php solana-php/solana-sdk`.
+- [x] T002 [P] Create the `Protocol` enum in `src/Enums/Protocol.php` with cases for `ETH` and `SOL`.
+- [x] T003 [P] Create the `ControlType` enum in `src/Enums/ControlType.php` with cases for `custodial`, `external`, and `shared`.
+- [x] T004 Create the configuration file `config/wallets.php` based on the decisions in `research.md`. This file will define the drivers for the wallet manager.
 
 ## Phase 3.2: Database Architecture (Two-Table Design)
-- [ ] T005 Create the database migration for the `wallets` table (global address registry) with fields: id, uuid, protocol, address, control_type, metadata, timestamps. Unique constraint on (protocol, address).
-- [ ] T006 Create the database migration for the `wallet_owners` table (ownership/control records) with fields: id, uuid, wallet_id, tenant_id, owner_id, owner_type, encrypted_private_key, timestamps. Unique constraint on (wallet_id, tenant_id, owner_id, owner_type).
+- [x] T005 Create the database migration for the `wallets` table (global address registry) with fields: id, uuid, protocol, address, control_type, metadata, timestamps. Unique constraint on (protocol, address).
+- [x] T006 Create the database migration for the `wallet_owners` table (ownership/control records) with fields: id, uuid, wallet_id, tenant_id, owner_id, owner_type, encrypted_private_key, timestamps. Unique constraint on (wallet_id, tenant_id, owner_id, owner_type).
 
 ## Phase 3.3: Tests First (TDD) ⚠️ MUST COMPLETE BEFORE 3.4
 **CRITICAL: These tests MUST be written and MUST FAIL before ANY implementation**
-- [ ] T007 [P] Create a unit test `tests/Unit/WalletModelTest.php` to verify the `Wallet` model's casts, fillable attributes, and relationships for the global registry.
-- [ ] T008 [P] Create a unit test `tests/Unit/WalletOwnerModelTest.php` to verify the `WalletOwner` model's casts, fillable attributes, and relationships.
-- [ ] T009 [P] Create a feature test `tests/Feature/CreateEthereumWalletTest.php` that follows the user story from `quickstart.md` to create a custodial Ethereum wallet for a user and assert both wallets and wallet_owners records are created correctly.
-- [ ] T010 [P] Create a feature test `tests/Feature/CreateSolanaWalletTest.php` that follows the user story from `quickstart.md` to create a custodial Solana wallet for a user and assert both wallets and wallet_owners records are created correctly.
-- [ ] T011 [P] Create a feature test `tests/Feature/WatchExternalWalletTest.php` to verify external wallet watching creates only wallets records (no wallet_owners) and supports implicit watch relationships.
+- [x] T007 [P] Create a unit test `tests/Unit/WalletModelTest.php` to verify the `Wallet` model's casts, fillable attributes, and relationships for the global registry.
+- [x] T008 [P] Create a unit test `tests/Unit/WalletOwnerModelTest.php` to verify the `WalletOwner` model's casts, fillable attributes, and relationships.
+- [x] T009 [P] Create a feature test `tests/Feature/CreateEthereumWalletTest.php` that follows the user story from `quickstart.md` to create a custodial Ethereum wallet for a user and assert both wallets and wallet_owners records are created correctly.
+- [x] T010 [P] Create a feature test `tests/Feature/CreateSolanaWalletTest.php` that follows the user story from `quickstart.md` to create a custodial Solana wallet for a user and assert both wallets and wallet_owners records are created correctly.
+- [x] T011 [P] Create a feature test `tests/Feature/WatchExternalWalletTest.php` to verify external wallet watching creates only wallets records (no wallet_owners) and supports implicit watch relationships.
 
 ## Phase 3.4: Core Models (ONLY after tests are failing)
-- [ ] T012 Create the `Wallet` Eloquent model in `src/Models/Wallet.php` as global address registry with relationships to `WalletOwner`.
-- [ ] T013 Create the `WalletOwner` Eloquent model in `src/Models/WalletOwner.php` for ownership/control records with encrypted private key handling.
-- [ ] T014 Create the `HasWallets` trait in `src/Concerns/HasWallets.php` to provide relationships for both controlled and watchable wallets.
+- [x] Create Wallet Model
+  - Update src/Models/Wallet.php to implement the global registry model with protocol, address, control_type, metadata, and hasMany owners relationship
+- [x] Create WalletOwner Model
+  - Create src/Models/WalletOwner.php with belongsTo wallet, polymorphic owner, and encrypted private key handling
+- [x] Create WalletService
+  - Create src/Services/WalletService.php with methods for creating custodial wallets, adding external wallets, and managing shared wallets
+- [ ] T014 Create the `HasWallets` trait in `src/Concerns/HasWallets.php` to provide relationships for both controlled and external wallets.
 
 ## Phase 3.5: Service Layer Implementation
 - [ ] T015 Create the `WalletData` DTO in `src/Contracts/WalletData.php`.
@@ -36,7 +43,6 @@
 - [ ] T021 Update `WalletsServiceProvider.php` to register the `WalletManager` as a singleton and bind the `WalletServiceInterface`.
 
 ## Phase 3.6: Legacy Compatibility & API Design
-- [ ] T022 Create unified wallet service methods: `createCustodialWallet()` for controlled wallets and `watchExternalWallet()` for watch-only using firstOrCreate pattern.
 - [ ] T023 Refactor the existing `EthWallet` and `SolWallet` classes to use the new two-table architecture while maintaining backward compatibility.
 
 ## Phase 3.7: Polish & Documentation
@@ -74,5 +80,4 @@ Task: "Create the SolanaAdapter in src/Protocols/Solana/WalletAdapter.php"
 - **wallets table**: Global blockchain address registry, never deleted, supports implicit watch relationships
 - **wallet_owners table**: Control records with encrypted private keys, can be deleted without affecting global registry  
 - **Custodial wallets**: Records in both tables (control + global registry)
-- **External/watch-only wallets**: Records only in wallets table (global registry only)
 - **firstOrCreate pattern**: Used for external wallet imports to prevent duplicates while allowing multi-tenant watching

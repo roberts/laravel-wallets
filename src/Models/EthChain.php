@@ -35,6 +35,11 @@ class EthChain extends Model
         return EthChainFactory::new();
     }
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
     protected $fillable = [
         'name',
         'abbreviation',
@@ -49,6 +54,11 @@ class EthChain extends Model
         'is_default',
     ];
 
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array<string, string>
+     */
     protected $casts = [
         'chain_id' => 'integer',
         'supports_eip1559' => 'boolean',
@@ -70,7 +80,7 @@ class EthChain extends Model
 
     /**
      * Get all active chains.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Collection<int, EthChain>
      */
     public static function active(): \Illuminate\Database\Eloquent\Collection
@@ -96,17 +106,17 @@ class EthChain extends Model
 
     /**
      * Get all available RPC URLs (primary + alternates).
-     * 
+     *
      * @return array<string>
      */
     public function getAllRpcs(): array
     {
         $rpcs = [$this->rpc];
-        
+
         if ($this->rpc_alternates) {
             $rpcs = array_merge($rpcs, $this->rpc_alternates);
         }
-        
+
         return array_unique($rpcs);
     }
 
@@ -147,7 +157,7 @@ class EthChain extends Model
      */
     public function getTransactionUrl(string $txHash): ?string
     {
-        return $this->scanner ? $this->scanner . '/tx/' . $txHash : null;
+        return $this->scanner ? $this->scanner.'/tx/'.$txHash : null;
     }
 
     /**
@@ -155,7 +165,7 @@ class EthChain extends Model
      */
     public function getAddressUrl(string $address): ?string
     {
-        return $this->scanner ? $this->scanner . '/address/' . $address : null;
+        return $this->scanner ? $this->scanner.'/address/'.$address : null;
     }
 
     /**

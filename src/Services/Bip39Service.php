@@ -24,7 +24,7 @@ class Bip39Service
         if ($entropyLength <= 0) {
             throw new \InvalidArgumentException('Invalid entropy length calculated.');
         }
-        
+
         $entropy = random_bytes($entropyLength);
         $checksum = hash('sha256', $entropy, true);
 

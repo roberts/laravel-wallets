@@ -42,7 +42,7 @@ class KeccakService
     {
         $hexHash = $this->hash($input, $outputLength);
         $binary = hex2bin($hexHash);
-        
+
         if ($binary === false) {
             throw new \RuntimeException('Failed to convert hex hash to binary');
         }

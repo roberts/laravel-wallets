@@ -2,7 +2,7 @@
 
 namespace Roberts\LaravelWallets\Enums;
 
-enum WalletType: string
+enum ControlType: string
 {
     case CUSTODIAL = 'custodial';
     case SHARED = 'shared';
@@ -20,7 +20,7 @@ enum WalletType: string
     public function description(): string
     {
         return match ($this) {
-            self::CUSTODIAL => 'Fully managed wallet with private key stored securely',
+            self::CUSTODIAL => 'Fully managed wallet by specific tenant with private key stored securely',
             self::SHARED => 'Wallet with application control plus a shared private key for user access',
             self::EXTERNAL => 'External wallet (User submitted or pulled from token holder list)',
         };

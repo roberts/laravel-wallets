@@ -37,7 +37,7 @@ class Client
         if ($binaryKey === false) {
             throw new \InvalidArgumentException('Invalid hexadecimal public key');
         }
-        
+
         $hash = $this->keccakService->hash(substr($binaryKey, 1), 256);
 
         return '0x'.substr($hash, -40);

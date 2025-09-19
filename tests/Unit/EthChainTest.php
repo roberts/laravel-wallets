@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Schema;
 use Roberts\LaravelWallets\Models\EthChain;
 
@@ -52,7 +51,7 @@ describe('EthChain Model', function () {
         test('ensures unique chain_id constraint', function () {
             EthChain::factory()->create(['chain_id' => 123]);
 
-            expect(fn() => EthChain::factory()->create(['chain_id' => 123]))
+            expect(fn () => EthChain::factory()->create(['chain_id' => 123]))
                 ->toThrow(Exception::class);
         });
     });
@@ -124,7 +123,7 @@ describe('EthChain Model', function () {
             $activeChains = EthChain::active();
 
             expect($activeChains)->toHaveCount(18)
-                ->and($activeChains->every(fn($chain) => $chain->is_active))->toBeTrue();
+                ->and($activeChains->every(fn ($chain) => $chain->is_active))->toBeTrue();
         });
 
         test('can get chain by chain_id', function () {
@@ -189,7 +188,7 @@ describe('EthChain Model', function () {
 
         test('can get transaction URL', function () {
             $txHash = '0x123456789abcdef';
-            $expectedUrl = 'https://etherscan.io/tx/' . $txHash;
+            $expectedUrl = 'https://etherscan.io/tx/'.$txHash;
             expect($this->chain->getTransactionUrl($txHash))->toBe($expectedUrl);
         });
 
@@ -200,7 +199,7 @@ describe('EthChain Model', function () {
 
         test('can get address URL', function () {
             $address = '0x742d35Cc6634C0532925a3b8D91d9FdB0c9e6b3';
-            $expectedUrl = 'https://etherscan.io/address/' . $address;
+            $expectedUrl = 'https://etherscan.io/address/'.$address;
             expect($this->chain->getAddressUrl($address))->toBe($expectedUrl);
         });
 
