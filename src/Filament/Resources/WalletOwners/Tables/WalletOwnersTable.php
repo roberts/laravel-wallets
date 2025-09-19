@@ -105,7 +105,8 @@ class WalletOwnersTable
                     ->options(function () {
                         // Get unique tenant IDs from wallet owners
                         $tenantIds = \Roberts\LaravelWallets\Models\WalletOwner::distinct()->pluck('tenant_id')->toArray();
-                        return array_combine($tenantIds, array_map(fn($id) => "Tenant {$id}", $tenantIds));
+
+                        return array_combine($tenantIds, array_map(fn ($id) => "Tenant {$id}", $tenantIds));
                     })
                     ->multiple(),
 

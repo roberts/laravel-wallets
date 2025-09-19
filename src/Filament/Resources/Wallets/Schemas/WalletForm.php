@@ -72,8 +72,8 @@ class WalletForm
 
                 Placeholder::make('timestamps')
                     ->label('Timestamps')
-                    ->content(fn ($record) => $record ? 
-                        "Created: {$record->created_at->format('M j, Y g:i A')} | Updated: {$record->updated_at->format('M j, Y g:i A')}" : 
+                    ->content(fn ($record) => $record ?
+                        "Created: {$record->created_at->format('M j, Y g:i A')} | Updated: {$record->updated_at->format('M j, Y g:i A')}" :
                         'Will be set automatically on creation'
                     )
                     ->columnSpan(2)

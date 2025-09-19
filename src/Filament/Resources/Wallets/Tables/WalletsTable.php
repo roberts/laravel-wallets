@@ -10,8 +10,6 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Roberts\LaravelWallets\Enums\ControlType;
-use Roberts\LaravelWallets\Enums\Protocol;
 
 class WalletsTable
 {
@@ -21,7 +19,7 @@ class WalletsTable
             ->modifyQueryUsing(function ($query) {
                 // Get current tenant context if available
                 $currentTenantId = config('tenancy.tenant_id');
-                
+
                 if ($currentTenantId) {
                     // Show wallets that have ownership records for this tenant,
                     // plus external wallets (which can be watched by all tenants)
@@ -31,7 +29,7 @@ class WalletsTable
                         })->orWhere('control_type', \Roberts\LaravelWallets\Enums\ControlType::EXTERNAL);
                     });
                 }
-                
+
                 return $query;
             })
             ->columns([
@@ -92,11 +90,11 @@ class WalletsTable
                         if (! $currentTenantId) {
                             return 'N/A';
                         }
-                        
+
                         $ownershipExists = $record->owners()
                             ->where('tenant_id', $currentTenantId)
                             ->exists();
-                            
+
                         if ($ownershipExists) {
                             return 'Owned';
                         } elseif ($record->control_type === \Roberts\LaravelWallets\Enums\ControlType::EXTERNAL) {

@@ -25,8 +25,7 @@ class WalletOwnerForm
                     ->relationship('wallet', 'address')
                     ->searchable()
                     ->preload()
-                    ->getOptionLabelFromRecordUsing(fn (Wallet $record): string => 
-                        "{$record->protocol->label()}: {$record->address} ({$record->control_type->label()})"
+                    ->getOptionLabelFromRecordUsing(fn (Wallet $record): string => "{$record->protocol->label()}: {$record->address} ({$record->control_type->label()})"
                     )
                     ->helperText('Select the wallet to assign ownership for'),
 
