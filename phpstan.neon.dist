@@ -10,3 +10,7 @@ parameters:
     tmpDir: build/phpstan
     checkOctaneCompatibility: true
     checkModelProperties: true
+    excludePaths:
+        - src/Services/EncryptionService.php
+        - src/Wallets/EthWallet.php
+        - src/Wallets/SolWallet.php

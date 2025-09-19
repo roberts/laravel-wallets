@@ -3,95 +3,113 @@
 namespace Roberts\LaravelWallets\Concerns;
 
 use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Roberts\LaravelWallets\Enums\Protocol;
-use Roberts\LaravelWallets\Enums\WalletType;
+use Roberts\LaravelWallets\Services\WalletService;
+use Roberts\LaravelWallets\Wallets\EthWallet;
+use Roberts\LaravelWallets\Wallets\SolWallet;
 
+/**
+ * Trait for managing external wallet operations.
+ *
+ * This trait provides functionality for adding external wallets for tracking.
+ * External wallets are blockchain addresses without private key control.
+ */
 trait ManagesExternalWallet
 {
-    use ManagesWalletPersistence;
-
     /**
-     * Add an external wallet by address.
+     * Add an external wallet for tracking (no private key).
+     * Generic method that routes to protocol-specific methods.
+     *
+     * @param  array<string, mixed>|null  $metadata
      */
-    public static function addExternal(string $address, ?Authenticatable $user = null): static
-    {
-        // 1. Validate address format for this protocol
-        static::validateAddressFormat($address);
+    public static function addExternal(
+        string $address,
+        ?Authenticatable $user = null,
+        ?int $tenantId = null,
+        ?array $metadata = null
+    ): static {
+        $user = $user ?? Auth::user();
+        $tenantId = $tenantId ?? static::getCurrentTenantId();
+        $metadata = $metadata ?? [];
 
-        // 2. Attempt to derive public key (if possible for the protocol)
-        $publicKey = static::derivePublicKeyFromAddress($address) ?? '';
-
-        // 3. Get the protocol for this wallet class
-        $protocol = static::getProtocol();
-
-        // 4. Use firstOrCreate pattern
-        $walletData = static::firstOrCreateExternalWallet($protocol, $address, $publicKey, $user);
-
-        // 5. Return wallet instance
-        /** @phpstan-ignore new.static */
-        return new static(
-            $walletData['address'],
-            $walletData['public_key'],
-            '', // No private key for external wallets
-            $user
-        );
-    }
-
-    /**
-     * Create or find existing external wallet in database.
-     * 
-     * @return array{address: string, public_key: string}
-     */
-    protected static function firstOrCreateExternalWallet(Protocol $protocol, string $address, string $publicKey, ?Authenticatable $user): array
-    {
-        /** @var \stdClass|null $existingRecord */
-        $existingRecord = DB::table('wallets')
-            ->where('protocol', $protocol)
-            ->where('address', $address)
-            ->where('owner_id', $user?->getAuthIdentifier())
-            ->first();
-
-        if ($existingRecord) {
-            return [
-                'address' => (string) $existingRecord->address,
-                'public_key' => (string) $existingRecord->public_key,
-            ];
+        if (! $user instanceof Model) {
+            throw new \InvalidArgumentException('User must be an Eloquent Model');
         }
 
-        DB::table('wallets')->insert([
-            'protocol' => $protocol,
-            'address' => $address,
-            'wallet_type' => WalletType::EXTERNAL,
-            'public_key' => $publicKey,
-            'private_key' => null, // No private key for external wallets
-            'owner_id' => $user?->getAuthIdentifier(),
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        // Determine protocol from address format
+        if (str_starts_with($address, '0x') && strlen($address) === 42) {
+            return static::addEthereumExternal($address, $user, $tenantId, $metadata);
+        } elseif (strlen($address) >= 32 && strlen($address) <= 44) {
+            return static::addSolanaExternal($address, $user, $tenantId, $metadata);
+        }
 
-        return [
-            'address' => $address,
-            'public_key' => $publicKey,
-        ];
+        throw new \InvalidArgumentException('Invalid address format. Unable to determine protocol.');
     }
 
     /**
-     * Validate the address format for this specific protocol.
-     * Must be implemented by each wallet class.
+     * Add an external Ethereum wallet for tracking.
      */
-    abstract protected static function validateAddressFormat(string $address): void;
+    /**
+     * Add an external Ethereum wallet for a specific user and tenant.
+     *
+     * @param  array<string, mixed>  $metadata
+     */
+    public static function addEthereumExternal(
+        string $address,
+        \Illuminate\Database\Eloquent\Model $owner,
+        int $tenantId,
+        array $metadata = []
+    ): EthWallet {
+        $walletService = app(WalletService::class);
+        $result = $walletService->addExternalWallet(
+            protocol: Protocol::ETH,
+            address: $address,
+            owner: $owner,
+            tenantId: $tenantId,
+            metadata: $metadata
+        );
+
+        return EthWallet::createFromWallet($result['wallet'], $result['walletOwner']);
+    }
 
     /**
-     * Derive public key from address if possible for this protocol.
-     * Returns null if public key cannot be derived from address.
-     * Must be implemented by each wallet class.
+     * Add an external Solana wallet for tracking.
+     *
+     * @param  array<string, mixed>  $metadata
      */
-    abstract protected static function derivePublicKeyFromAddress(string $address): ?string;
+    public static function addSolanaExternal(
+        string $address,
+        \Illuminate\Database\Eloquent\Model $owner,
+        int $tenantId,
+        array $metadata = []
+    ): SolWallet {
+        $walletService = app(WalletService::class);
+        $result = $walletService->addExternalWallet(
+            protocol: Protocol::SOL,
+            address: $address,
+            owner: $owner,
+            tenantId: $tenantId,
+            metadata: $metadata
+        );
+
+        return SolWallet::createFromWallet($result['wallet'], $result['walletOwner']);
+    }
 
     /**
-     * Get the protocol enum for this wallet class.
-     * Must be implemented by each wallet class.
+     * Get current tenant ID from context.
      */
-    abstract protected static function getProtocol(): Protocol;
+    protected static function getCurrentTenantId(): int
+    {
+        // Try to get from Laravel single-db tenancy context
+        $tenantId = config('tenancy.tenant_id');
+
+        if ($tenantId) {
+            return $tenantId;
+        }
+
+        // Fallback to default tenant
+        return 1;
+    }
 }

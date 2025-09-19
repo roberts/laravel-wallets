@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Roberts\LaravelWallets\Models\EthChain;
 use Illuminate\Database\Seeder;
+use Roberts\LaravelWallets\Models\EthChain;
 
 class EthChainSeeder extends Seeder
 {
@@ -23,7 +23,7 @@ class EthChainSeeder extends Seeder
                 'rpc_alternates' => [
                     'https://rpc.ankr.com/eth',
                     'https://eth-mainnet.public.blastapi.io',
-                    'https://ethereum.blockpi.network/v1/rpc/public'
+                    'https://ethereum.blockpi.network/v1/rpc/public',
                 ],
                 'is_active' => true,
                 'is_default' => true,
@@ -41,7 +41,7 @@ class EthChainSeeder extends Seeder
                 'rpc_alternates' => json_encode([
                     'https://rpc.sepolia.org',
                     'https://sepolia.gateway.tenderly.co',
-                    'https://rpc-sepolia.rockx.com'
+                    'https://rpc-sepolia.rockx.com',
                 ]),
                 'is_active' => true,
                 'is_default' => false,
@@ -61,7 +61,7 @@ class EthChainSeeder extends Seeder
                 'rpc_alternates' => json_encode([
                     'https://base-rpc.publicnode.com',
                     'https://base.gateway.tenderly.co',
-                    'https://rpc.ankr.com/base'
+                    'https://rpc.ankr.com/base',
                 ]),
                 'is_active' => true,
                 'is_default' => false,
@@ -79,7 +79,7 @@ class EthChainSeeder extends Seeder
                 'native_symbol' => 'ETH',
                 'native_decimals' => 18,
                 'rpc_alternates' => json_encode([
-                    'https://rpc.unichain.org'
+                    'https://rpc.unichain.org',
                 ]),
                 'is_active' => true,
                 'is_default' => false,
@@ -99,7 +99,7 @@ class EthChainSeeder extends Seeder
                 'rpc_alternates' => json_encode([
                     'https://optimism-rpc.publicnode.com',
                     'https://rpc.ankr.com/optimism',
-                    'https://optimism.gateway.tenderly.co'
+                    'https://optimism.gateway.tenderly.co',
                 ]),
                 'is_active' => true,
                 'is_default' => false,
@@ -119,7 +119,7 @@ class EthChainSeeder extends Seeder
                 'rpc_alternates' => json_encode([
                     'https://polygon-mainnet.public.blastapi.io',
                     'https://rpc.ankr.com/polygon',
-                    'https://polygon-bor-rpc.publicnode.com'
+                    'https://polygon-bor-rpc.publicnode.com',
                 ]),
                 'is_active' => true,
                 'is_default' => false,
@@ -139,7 +139,7 @@ class EthChainSeeder extends Seeder
                 'rpc_alternates' => json_encode([
                     'https://arbitrum-one-rpc.publicnode.com',
                     'https://rpc.ankr.com/arbitrum',
-                    'https://arbitrum.gateway.tenderly.co'
+                    'https://arbitrum.gateway.tenderly.co',
                 ]),
                 'is_active' => true,
                 'is_default' => false,
@@ -158,7 +158,7 @@ class EthChainSeeder extends Seeder
                 'native_decimals' => 18,
                 'rpc_alternates' => json_encode([
                     'https://arbitrum-nova-rpc.publicnode.com',
-                    'https://rpc.ankr.com/arbitrumnova'
+                    'https://rpc.ankr.com/arbitrumnova',
                 ]),
                 'is_active' => true,
                 'is_default' => false,
@@ -177,7 +177,7 @@ class EthChainSeeder extends Seeder
                 'native_decimals' => 18,
                 'rpc_alternates' => json_encode([
                     'https://zksync-era.blockpi.network/v1/rpc/public',
-                    'https://zksync.gateway.tenderly.co'
+                    'https://zksync.gateway.tenderly.co',
                 ]),
                 'is_active' => true,
                 'is_default' => false,
@@ -196,7 +196,7 @@ class EthChainSeeder extends Seeder
                 'native_decimals' => 18,
                 'rpc_alternates' => json_encode([
                     'https://linea-mainnet.public.blastapi.io',
-                    'https://rpc.ankr.com/linea'
+                    'https://rpc.ankr.com/linea',
                 ]),
                 'is_active' => true,
                 'is_default' => false,
@@ -215,7 +215,7 @@ class EthChainSeeder extends Seeder
                 'native_decimals' => 18,
                 'rpc_alternates' => json_encode([
                     'https://scroll-mainnet.public.blastapi.io',
-                    'https://rpc.ankr.com/scroll'
+                    'https://rpc.ankr.com/scroll',
                 ]),
                 'is_active' => true,
                 'is_default' => false,
@@ -234,7 +234,7 @@ class EthChainSeeder extends Seeder
                 'native_decimals' => 18,
                 'rpc_alternates' => json_encode([
                     'https://mantle-mainnet.public.blastapi.io',
-                    'https://rpc.ankr.com/mantle'
+                    'https://rpc.ankr.com/mantle',
                 ]),
                 'is_active' => true,
                 'is_default' => false,
@@ -253,7 +253,7 @@ class EthChainSeeder extends Seeder
                 'native_decimals' => 18,
                 'rpc_alternates' => json_encode([
                     'https://blast-mainnet.public.blastapi.io',
-                    'https://rpc.ankr.com/blast'
+                    'https://rpc.ankr.com/blast',
                 ]),
                 'is_active' => true,
                 'is_default' => false,
@@ -271,7 +271,7 @@ class EthChainSeeder extends Seeder
                 'native_symbol' => 'ETH',
                 'native_decimals' => 18,
                 'rpc_alternates' => json_encode([
-                    'https://mode.gateway.tenderly.co'
+                    'https://mode.gateway.tenderly.co',
                 ]),
                 'is_active' => true,
                 'is_default' => false,
@@ -289,7 +289,7 @@ class EthChainSeeder extends Seeder
                 'native_symbol' => 'ETH',
                 'native_decimals' => 18,
                 'rpc_alternates' => json_encode([
-                    'https://manta-pacific.api.onfinality.io/public'
+                    'https://manta-pacific.api.onfinality.io/public',
                 ]),
                 'is_active' => true,
                 'is_default' => false,
@@ -307,7 +307,7 @@ class EthChainSeeder extends Seeder
                 'native_symbol' => 'ETH',
                 'native_decimals' => 18,
                 'rpc_alternates' => json_encode([
-                    'https://rpc.starknet.lava.build'
+                    'https://rpc.starknet.lava.build',
                 ]),
                 'is_active' => true,
                 'is_default' => false,
@@ -325,7 +325,7 @@ class EthChainSeeder extends Seeder
                 'native_symbol' => 'APE',
                 'native_decimals' => 18,
                 'rpc_alternates' => json_encode([
-                    'https://rpc.apechain.com'
+                    'https://rpc.apechain.com',
                 ]),
                 'is_active' => true,
                 'is_default' => false,
@@ -343,7 +343,7 @@ class EthChainSeeder extends Seeder
                 'native_symbol' => 'ETH',
                 'native_decimals' => 18,
                 'rpc_alternates' => json_encode([
-                    'https://rpc.abstract.foundation'
+                    'https://rpc.abstract.foundation',
                 ]),
                 'is_active' => true,
                 'is_default' => false,

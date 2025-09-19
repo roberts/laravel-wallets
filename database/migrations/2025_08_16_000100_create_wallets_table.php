@@ -10,21 +10,11 @@ return new class extends Migration
     {
         Schema::create('wallets', function (Blueprint $table) {
             $table->id();
-            $table->string('protocol', 25)->default('eth'); // BlockchainProtocol: eth|sol|btc|sui|xrp|ada|ton|hbar
-            $table->string('address')->unique();
-            $table->text('private_key')->nullable(); // encrypted private key (Crypt)
-            $table->string('wallet_type', 25)->default('external'); // custodial, shared, external
-            $table->foreignId('owner_id')->nullable()->constrained('users'); // fixed owner to users table
-            // Multichain key info
-            $table->text('public_key')->nullable();
-            $table->string('derivation_path')->nullable();
-            $table->string('key_scheme')->nullable(); // e.g., secp256k1, ed25519
-            // wallet activity
-            $table->string('status', 25)->nullable()->index(); // active, inactive
-            $table->string('account_status')->nullable(); // created, funded, initialized, etc.
-            $table->json('meta')->nullable();
-            $table->timestamp('last_used_at')->nullable();
-            $table->timestamp('last_fetched_at')->nullable();
+            $table->uuid('uuid')->unique();
+            $table->string('protocol', 25)->default('eth')->index(); // BlockchainProtocol: eth|sol|btc|sui|xrp|ada|ton|hbar
+            $table->string('address')->unique()->index();
+            $table->string('control_type', 25)->index(); // 'custodial', 'external', 'shared'
+            $table->json('metadata')->nullable(); // Chain-specific data, labels, etc.
             $table->timestamps();
         });
     }

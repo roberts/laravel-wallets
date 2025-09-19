@@ -2,88 +2,52 @@
 
 namespace Roberts\LaravelWallets\Wallets;
 
-use Illuminate\Contracts\Auth\Authenticatable;
-use Roberts\LaravelWallets\Contracts\WalletInterface;
-use Roberts\LaravelWallets\Concerns\ManagesWalletPersistence;
-use Roberts\LaravelWallets\Concerns\ManagesExternalWallet;
 use Roberts\LaravelWallets\Enums\Protocol;
-use Roberts\LaravelWallets\Enums\WalletType;
-use Roberts\LaravelWallets\Protocols\Solana\Client as SolanaClient;
-use Roberts\LaravelWallets\Services\Bip39Service;
+use Roberts\LaravelWallets\Models\Wallet;
+use Roberts\LaravelWallets\Models\WalletOwner;
 use Roberts\LaravelWallets\Services\Base58Service;
 
-class SolWallet implements WalletInterface
+class SolWallet extends BaseWallet
 {
-    use ManagesWalletPersistence;
-    use ManagesExternalWallet;
-
-    public string $address;
-
-    public string $publicKey;
+    /**
+     * Get the protocol for this wallet type.
+     */
+    public function getProtocol(): Protocol
+    {
+        return Protocol::SOL;
+    }
 
     /**
-     * @phpstan-ignore property.onlyWritten
+     * Get the protocol for this wallet type (static version).
      */
-    private string $privateKey;
-
-    private ?Authenticatable $owner;
-
-    public function __construct(string $address, string $publicKey, string $privateKey, ?Authenticatable $owner = null)
+    protected static function getStaticProtocol(): Protocol
     {
-        $this->address = $address;
-        $this->publicKey = $publicKey;
-        $this->privateKey = $privateKey;
-        $this->owner = $owner;
+        return Protocol::SOL;
     }
 
-    public static function create(?Authenticatable $user = null): self
+    /**
+     * Create a Solana wallet instance from existing wallet and ownership models.
+     */
+    public static function createFromWallet(Wallet $wallet, ?WalletOwner $walletOwner = null): static
     {
-        $bip39Service = app(Bip39Service::class);
-        $solanaClient = app(SolanaClient::class);
-
-        $mnemonic = $bip39Service->generateMnemonic();
-        $seed = $bip39Service->mnemonicToSeed($mnemonic);
-        $keypair = $solanaClient->generateKeypairFromSeed($seed);
-        $address = $solanaClient->getAddressFromPublicKey($keypair['public_key']);
-
-        static::persist(
-            Protocol::SOL,
-            WalletType::CUSTODIAL,
-            $address,
-            $keypair['public_key'],
-            $keypair['private_key'],
-            $user
-        );
-
-        return new self(
-            address: $address,
-            publicKey: $keypair['public_key'],
-            privateKey: $keypair['private_key'],
-            owner: $user,
-        );
+        return new self($wallet, $walletOwner);
     }
 
-    public function getAddress(): string
-    {
-        return $this->address;
-    }
-
+    /**
+     * Get public key.
+     * For Solana, the address IS the public key (Base58 encoded).
+     */
     public function getPublicKey(): string
     {
-        return $this->publicKey;
-    }
-
-    public function getOwner(): ?Authenticatable
-    {
-        return $this->owner;
+        return $this->wallet->address;
     }
 
     /**
      * Validate Solana address format.
      */
-    protected static function validateAddressFormat(string $address): void
+    public static function validateAddressFormat(string $address): void
     {
-        if (!extension_loaded('sodium')) {
+        if (! extension_loaded('sodium')) {
             throw new \RuntimeException('The sodium PHP extension is required for Solana address validation.');
         }
 
@@ -92,7 +56,7 @@ class SolWallet implements WalletInterface
         try {
             $decoded = $base58Service->decode($address);
         } catch (\InvalidArgumentException $e) {
-            throw new \InvalidArgumentException('Invalid Solana address format: ' . $e->getMessage());
+            throw new \InvalidArgumentException('Invalid Solana address format: '.$e->getMessage());
         }
 
         // Solana public keys are exactly 32 bytes
@@ -100,50 +64,163 @@ class SolWallet implements WalletInterface
             throw new \InvalidArgumentException('Invalid Solana address: must be 32 bytes when decoded');
         }
 
-        // Additional validation: ensure it's a valid Ed25519 point
-        if (!static::isValidEd25519Point($decoded)) {
-            throw new \InvalidArgumentException('Invalid Solana address: not a valid Ed25519 point');
+        // Additional validation: ensure it's a valid Base58 string
+        if (! preg_match('/^[1-9A-HJ-NP-Za-km-z]{32,44}$/', $address)) {
+            throw new \InvalidArgumentException('Invalid Solana address: invalid Base58 format');
         }
     }
 
     /**
-     * For Solana, the address IS the public key (Base58 encoded).
+     * Get cluster/network info from metadata.
      */
-    protected static function derivePublicKeyFromAddress(string $address): ?string
+    public function getCluster(): string
+    {
+        $metadata = $this->getMetadata();
+
+        return $metadata['cluster'] ?? 'mainnet-beta';
+    }
+
+    /**
+     * Check if this is a mainnet wallet.
+     */
+    public function isMainnet(): bool
+    {
+        return $this->getCluster() === 'mainnet-beta';
+    }
+
+    /**
+     * Check if this is a testnet wallet.
+     */
+    public function isTestnet(): bool
+    {
+        $cluster = $this->getCluster();
+
+        return in_array($cluster, ['testnet', 'devnet']);
+    }
+
+    /**
+     * Check if this is a devnet wallet.
+     */
+    public function isDevnet(): bool
+    {
+        return $this->getCluster() === 'devnet';
+    }
+
+    /**
+     * Get network name based on cluster.
+     */
+    public function getNetworkName(): string
+    {
+        return match ($this->getCluster()) {
+            'mainnet-beta' => 'Solana Mainnet',
+            'testnet' => 'Solana Testnet',
+            'devnet' => 'Solana Devnet',
+            default => 'Unknown Solana Network',
+        };
+    }
+
+    /**
+     * Decode the Base58 address to raw bytes.
+     */
+    public function getAddressBytes(): string
     {
         $base58Service = app(Base58Service::class);
-        return $base58Service->decode($address);
+
+        return $base58Service->decode($this->wallet->address);
     }
 
     /**
-     * Get the protocol for Solana wallets.
+     * Validate a Solana address.
      */
-    protected static function getProtocol(): Protocol
-    {
-        return Protocol::SOL;
-    }
-
-    /**
-     * Validate that the decoded bytes represent a valid Ed25519 point.
-     */
-    protected static function isValidEd25519Point(string $bytes): bool
+    public static function validateAddress(string $address): bool
     {
         try {
-            // Simple validation: check that it's 32 bytes and doesn't contain all zeros
-            if (strlen($bytes) !== 32) {
-                return false;
-            }
-            
-            // Check that it's not all zeros (invalid public key)
-            if ($bytes === str_repeat("\0", 32)) {
-                return false;
-            }
-            
-            // For now, we'll accept any 32-byte value that's not all zeros
-            // More sophisticated Ed25519 curve validation could be added here
+            static::validateAddressFormat($address);
+
             return true;
-        } catch (\Exception $e) {
+        } catch (\InvalidArgumentException) {
             return false;
         }
+    }
+
+    /**
+     * Validate a Solana private key.
+     */
+    public static function validatePrivateKey(string $privateKey): bool
+    {
+        if (! extension_loaded('sodium')) {
+            return false;
+        }
+
+        $base58Service = app(Base58Service::class);
+
+        try {
+            $decoded = $base58Service->decode($privateKey);
+
+            // Solana private keys are 64 bytes (32-byte secret key + 32-byte public key)
+            return strlen($decoded) === 64;
+        } catch (\InvalidArgumentException) {
+            return false;
+        }
+    }
+
+    /**
+     * Generate a new Solana wallet address and private key pair.
+     */
+    public static function generateKeyPair(): array
+    {
+        if (! extension_loaded('sodium')) {
+            throw new \RuntimeException('The sodium PHP extension is required for Solana key generation.');
+        }
+
+        // Generate Ed25519 keypair
+        $keyPair = sodium_crypto_sign_keypair();
+        $privateKeyRaw = sodium_crypto_sign_secretkey($keyPair);
+        $publicKeyRaw = sodium_crypto_sign_publickey($keyPair);
+
+        $base58Service = app(Base58Service::class);
+        $privateKey = $base58Service->encode($privateKeyRaw);
+        $publicKey = $base58Service->encode($publicKeyRaw);
+
+        return [
+            'address' => $publicKey, // In Solana, the address IS the public key
+            'privateKey' => $privateKey,
+            'publicKey' => $publicKey,
+        ];
+    }
+
+    /**
+     * Get the public key from a private key.
+     */
+    public static function getPublicKeyFromPrivate(string $privateKey): string
+    {
+        if (! extension_loaded('sodium')) {
+            throw new \RuntimeException('The sodium PHP extension is required for Solana key derivation.');
+        }
+
+        $base58Service = app(Base58Service::class);
+        $privateKeyRaw = $base58Service->decode($privateKey);
+
+        // Extract the public key from the 64-byte private key
+        $publicKeyRaw = substr($privateKeyRaw, 32);
+
+        return $base58Service->encode($publicKeyRaw);
+    }
+
+    /**
+     * Get the address from a private key.
+     */
+    public static function getAddressFromPrivate(string $privateKey): string
+    {
+        // In Solana, the address IS the public key
+        return static::getPublicKeyFromPrivate($privateKey);
+    }
+
+    /**
+     * Check if this wallet implementation supports the given protocol.
+     */
+    public static function supportsProtocol(Protocol $protocol): bool
+    {
+        return $protocol === Protocol::SOL;
     }
 }

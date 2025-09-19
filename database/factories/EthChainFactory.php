@@ -2,8 +2,8 @@
 
 namespace Roberts\LaravelWallets\Database\Factories;
 
-use Roberts\LaravelWallets\Models\EthChain;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Roberts\LaravelWallets\Models\EthChain;
 
 /**
  * @extends Factory<EthChain>
@@ -17,20 +17,20 @@ class EthChainFactory extends Factory
         $chainId = $this->faker->unique()->numberBetween(1, 999999);
         $networkName = $this->faker->unique()->word();
         $abbreviation = strtoupper(substr($networkName, 0, 5));
-        
+
         return [
-            'name' => ucwords($networkName) . ' Network',
+            'name' => ucwords($networkName).' Network',
             'abbreviation' => $abbreviation,
             'chain_id' => $chainId,
-            'rpc' => 'https://rpc.' . strtolower($networkName) . '.io',
-            'scanner' => 'https://' . strtolower($networkName) . 'scan.io',
+            'rpc' => 'https://rpc.'.strtolower($networkName).'.io',
+            'scanner' => 'https://'.strtolower($networkName).'scan.io',
             'supports_eip1559' => $this->faker->boolean(80), // 80% chance of supporting EIP-1559
             'native_symbol' => $this->faker->randomElement(['ETH', 'MATIC', 'BNB', 'AVAX', 'FTM']),
             'native_decimals' => 18,
             'rpc_alternates' => $this->faker->optional(0.7)->randomElements([
-                'https://rpc.ankr.com/' . strtolower($abbreviation),
-                'https://rpc.publicnode.com/' . strtolower($abbreviation),
-                'https://' . strtolower($abbreviation) . '.gateway.tenderly.co',
+                'https://rpc.ankr.com/'.strtolower($abbreviation),
+                'https://rpc.publicnode.com/'.strtolower($abbreviation),
+                'https://'.strtolower($abbreviation).'.gateway.tenderly.co',
             ], $this->faker->numberBetween(1, 3)),
             'is_active' => $this->faker->boolean(90), // 90% chance of being active
             'is_default' => false, // Only one should be default, set manually in tests
