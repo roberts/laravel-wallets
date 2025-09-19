@@ -27,8 +27,6 @@ class EthWallet extends BaseWallet
 
     /**
      * Create an Ethereum wallet instance from existing wallet and ownership models.
-     *
-     * @return static
      */
     public static function createFromWallet(Wallet $wallet, ?WalletOwner $walletOwner = null): static
     {
