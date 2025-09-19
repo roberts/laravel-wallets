@@ -1,9 +1,9 @@
 <?php
 
-use Roberts\LaravelWallets\Services\Solana\SolanaService;
+use Mockery;
 use Roberts\LaravelWallets\Protocols\Solana\RpcClient;
 use Roberts\LaravelWallets\Protocols\Solana\RpcException;
-use Mockery;
+use Roberts\LaravelWallets\Services\Solana\SolanaService;
 
 describe('Solana Service', function () {
     beforeEach(function () {
@@ -22,8 +22,8 @@ describe('Solana Service', function () {
                 'value' => [
                     'lamports' => 1000000000,
                     'owner' => '11111111111111111111111111111112',
-                    'data' => ['', 'base64']
-                ]
+                    'data' => ['', 'base64'],
+                ],
             ];
             $balanceInfo = ['value' => 1000000000];
 
@@ -80,14 +80,14 @@ describe('Solana Service', function () {
                                         'tokenAmount' => [
                                             'amount' => '1000000000',
                                             'decimals' => 9,
-                                            'uiAmount' => 1.0
-                                        ]
-                                    ]
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
+                                            'uiAmount' => 1.0,
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
             ];
 
             $this->mockRpcClient->shouldReceive('getTokenAccountsByOwner')
@@ -130,7 +130,7 @@ describe('Solana Service', function () {
                     'blockTime' => 1640995200,
                     'confirmationStatus' => 'finalized',
                     'err' => null,
-                    'memo' => null
+                    'memo' => null,
                 ],
                 [
                     'signature' => 'Signature2',
@@ -138,8 +138,8 @@ describe('Solana Service', function () {
                     'blockTime' => 1640995100,
                     'confirmationStatus' => 'confirmed',
                     'err' => null,
-                    'memo' => 'Test transaction'
-                ]
+                    'memo' => 'Test transaction',
+                ],
             ];
 
             $this->mockRpcClient->shouldReceive('getSignaturesForAddress')
@@ -165,19 +165,19 @@ describe('Solana Service', function () {
                 'blockTime' => 1640995200,
                 'transaction' => [
                     'message' => ['instructions' => []],
-                    'signatures' => [$signature]
+                    'signatures' => [$signature],
                 ],
                 'meta' => [
                     'err' => null,
                     'fee' => 5000,
-                    'status' => ['Ok' => null]
-                ]
+                    'status' => ['Ok' => null],
+                ],
             ];
 
             $this->mockRpcClient->shouldReceive('getTransaction')
                 ->with($signature, [
                     'encoding' => 'jsonParsed',
-                    'maxSupportedTransactionVersion' => 0
+                    'maxSupportedTransactionVersion' => 0,
                 ])
                 ->once()
                 ->andReturn($transactionResponse);
@@ -198,7 +198,7 @@ describe('Solana Service', function () {
             $this->mockRpcClient->shouldReceive('getTransaction')
                 ->with($signature, [
                     'encoding' => 'jsonParsed',
-                    'maxSupportedTransactionVersion' => 0
+                    'maxSupportedTransactionVersion' => 0,
                 ])
                 ->once()
                 ->andReturn(null);
@@ -213,7 +213,7 @@ describe('Solana Service', function () {
             $validKeys = [
                 '9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM',
                 '11111111111111111111111111111112',
-                'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+                'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
             ];
 
             foreach ($validKeys as $key) {
@@ -244,7 +244,7 @@ describe('Solana Service', function () {
                 'epoch' => 300,
                 'slotIndex' => 216000, // Half way through epoch
                 'slotsInEpoch' => 432000,
-                'transactionCount' => 987654321
+                'transactionCount' => 987654321,
             ];
 
             $this->mockRpcClient->shouldReceive('getEpochInfo')
@@ -286,7 +286,7 @@ describe('Solana Service', function () {
             $this->mockRpcClient->shouldReceive('getHealth')
                 ->once()
                 ->andThrow(new RpcException('Network unreachable'));
-            
+
             $this->mockRpcClient->shouldReceive('getEndpoint')
                 ->once()
                 ->andReturn('https://api.testnet.solana.com');
@@ -307,14 +307,14 @@ describe('Solana Service', function () {
                 'value' => [
                     'amount' => '1000000000000000000',
                     'decimals' => 9,
-                    'uiAmount' => 1000000000.0
-                ]
+                    'uiAmount' => 1000000000.0,
+                ],
             ];
             $accountInfo = [
                 'value' => [
                     'lamports' => 1461600,
-                    'owner' => '11111111111111111111111111111112'
-                ]
+                    'owner' => '11111111111111111111111111111112',
+                ],
             ];
 
             $this->mockRpcClient->shouldReceive('getTokenSupply')
@@ -367,8 +367,8 @@ describe('Solana Service', function () {
             $accountInfo = [
                 'value' => [
                     'lamports' => 5000000, // 5M lamports
-                    'data' => [base64_encode(str_repeat('x', 165)), 'base64'] // 165 bytes
-                ]
+                    'data' => [base64_encode(str_repeat('x', 165)), 'base64'], // 165 bytes
+                ],
             ];
             $minBalance = 2039280;
 

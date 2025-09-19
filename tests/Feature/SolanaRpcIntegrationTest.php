@@ -1,9 +1,9 @@
 <?php
 
+use Roberts\LaravelWallets\Facades\SolanaRpc;
 use Roberts\LaravelWallets\Protocols\Solana\RpcClient;
 use Roberts\LaravelWallets\Protocols\Solana\RpcException;
 use Roberts\LaravelWallets\Services\Solana\SolanaService;
-use Roberts\LaravelWallets\Facades\SolanaRpc;
 
 describe('Solana RPC Integration', function () {
     beforeEach(function () {
@@ -12,21 +12,21 @@ describe('Solana RPC Integration', function () {
         $this->testEndpoint = 'https://api.testnet.solana.com';
         $this->rpcClient = new RpcClient($this->testEndpoint, [
             'cache' => false, // Disable caching for tests
-            'timeout' => 10
+            'timeout' => 10,
         ]);
     });
 
     describe('Service Provider Registration', function () {
         it('registers RPC client in service container', function () {
             expect(app()->bound(RpcClient::class))->toBeTrue();
-            
+
             $client = app(RpcClient::class);
             expect($client)->toBeInstanceOf(RpcClient::class);
         });
 
         it('registers Solana service in service container', function () {
             expect(app()->bound(SolanaService::class))->toBeTrue();
-            
+
             $service = app(SolanaService::class);
             expect($service)->toBeInstanceOf(SolanaService::class);
         });
@@ -41,7 +41,7 @@ describe('Solana RPC Integration', function () {
             // Test that the RPC client uses config values
             $client = app(RpcClient::class);
             $endpoint = $client->getEndpoint();
-            
+
             // Should match configuration or default
             expect($endpoint)->toBeString();
             expect(strlen($endpoint))->toBeGreaterThan(10); // Basic URL validation
@@ -51,9 +51,9 @@ describe('Solana RPC Integration', function () {
             // Test configuration switching
             config(['wallets.drivers.sol.use_testnet' => true]);
             config(['wallets.drivers.sol.testnet_rpc_url' => 'https://api.testnet.solana.com']);
-            
+
             // Create a new instance to test configuration
-            $client = new RpcClient();
+            $client = new RpcClient;
             expect($client->getEndpoint())->toContain('testnet');
         });
     });
@@ -81,7 +81,7 @@ describe('Solana RPC Integration', function () {
     describe('Error Handling', function () {
         it('throws proper exceptions for invalid endpoints', function () {
             $client = new RpcClient('https://invalid-endpoint-that-does-not-exist.com');
-            
+
             expect(function () use ($client) {
                 $client->getHealth();
             })->toThrow(RpcException::class);
@@ -101,17 +101,17 @@ describe('Solana RPC Integration', function () {
     describe('Caching Functionality', function () {
         it('can enable and disable caching', function () {
             $client = new RpcClient('https://api.testnet.solana.com', ['cache' => true]);
-            
+
             $client->setCache(false);
             $client->setCacheTimeout(300);
-            
+
             // Should not throw any errors
             expect(true)->toBeTrue();
         });
 
         it('can clear cache', function () {
             $client = new RpcClient('https://api.testnet.solana.com', ['cache' => true]);
-            
+
             $result = $client->clearCache();
             expect($result)->toBeBool();
         });
@@ -121,13 +121,13 @@ describe('Solana RPC Integration', function () {
         it('service uses injected RPC client', function () {
             $service = app(SolanaService::class);
             $client = $service->getRpcClient();
-            
+
             expect($client)->toBeInstanceOf(RpcClient::class);
         });
 
         it('service provides high-level functionality', function () {
             $service = app(SolanaService::class);
-            
+
             // Test validation method (doesn't require network)
             $isValid = $service->isValidPublicKey('9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM');
             expect($isValid)->toBeTrue();
@@ -140,13 +140,13 @@ describe('Solana RPC Integration', function () {
     describe('Laravel Integration Points', function () {
         it('works with Laravel collections', function () {
             $service = app(SolanaService::class);
-            
+
             // This method returns a Collection
             $client = $service->getRpcClient();
-            
+
             // Mock a token accounts response
             expect($client)->toBeInstanceOf(RpcClient::class);
-            
+
             // Test that empty collection is returned when no data (without network call)
             expect(collect([]))->toBeInstanceOf(\Illuminate\Support\Collection::class);
         });
@@ -154,12 +154,12 @@ describe('Solana RPC Integration', function () {
         it('respects Laravel configuration', function () {
             // Test that service respects Laravel config system
             $originalConfig = config('wallets.drivers.sol.rpc_url');
-            
+
             config(['wallets.drivers.sol.rpc_url' => 'https://custom-endpoint.com']);
             $customUrl = config('wallets.drivers.sol.rpc_url');
-            
+
             expect($customUrl)->toBe('https://custom-endpoint.com');
-            
+
             // Restore original config
             config(['wallets.drivers.sol.rpc_url' => $originalConfig]);
         });
@@ -172,23 +172,23 @@ describe('Solana RPC Integration', function () {
         it('integrates with Laravel caching', function () {
             // Test cache integration
             expect(\Illuminate\Support\Facades\Cache::getStore())->toBeTruthy();
-            
+
             // Test cache operations
             \Illuminate\Support\Facades\Cache::put('test-key', 'test-value', 60);
             $value = \Illuminate\Support\Facades\Cache::get('test-key');
             expect($value)->toBe('test-value');
         });
     });
-    
+
     describe('Real Network Interaction (Testnet)', function () {
         // These tests would require network access and should be run separately
-        
+
         it('can get network health (if testnet available)', function () {
             // Skip this test if we don't have network access
             // This would be enabled for actual testnet testing
-            
+
             expect(true)->toBeTrue(); // Placeholder
-            
+
             /*
             try {
                 $client = new RpcClient('https://api.testnet.solana.com');
@@ -203,7 +203,7 @@ describe('Solana RPC Integration', function () {
 
         it('can get version info (if testnet available)', function () {
             expect(true)->toBeTrue(); // Placeholder
-            
+
             /*
             try {
                 $client = new RpcClient('https://api.testnet.solana.com');

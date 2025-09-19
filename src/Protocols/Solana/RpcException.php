@@ -12,7 +12,7 @@ class RpcException extends Exception
 {
     private ?array $rpcData;
 
-    public function __construct(string $message = "", int $code = 0, ?Throwable $previous = null, ?array $rpcData = null)
+    public function __construct(string $message = '', int $code = 0, ?Throwable $previous = null, ?array $rpcData = null)
     {
         parent::__construct($message, $code, $previous);
         $this->rpcData = $rpcData;
@@ -38,23 +38,38 @@ class RpcException extends Exception
      * Common Solana RPC error codes
      */
     public const ERROR_PARSE_ERROR = -32700;
+
     public const ERROR_INVALID_REQUEST = -32600;
+
     public const ERROR_METHOD_NOT_FOUND = -32601;
+
     public const ERROR_INVALID_PARAMS = -32602;
+
     public const ERROR_INTERNAL_ERROR = -32603;
 
     // Solana-specific error codes
     public const ERROR_BLOCK_NOT_AVAILABLE = -32004;
+
     public const ERROR_NODE_UNHEALTHY = -32005;
+
     public const ERROR_TRANSACTION_SIGNATURE_VERIFICATION_FAILURE = -32006;
+
     public const ERROR_BLOCK_CLEANED_UP = -32007;
+
     public const ERROR_SLOT_SKIPPED = -32008;
+
     public const ERROR_NO_SNAPSHOT = -32009;
+
     public const ERROR_LONG_TERM_STORAGE_SLOT_SKIPPED = -32010;
+
     public const ERROR_KEY_EXCLUDED_FROM_SECONDARY_INDEX = -32011;
+
     public const ERROR_TRANSACTION_HISTORY_NOT_AVAILABLE = -32012;
+
     public const ERROR_SCAN_ERROR = -32013;
+
     public const ERROR_TRANSACTION_SIGNATURE_LEN_MISMATCH = -32014;
+
     public const ERROR_BLOCK_STATUS_NOT_AVAILABLE_YET = -32015;
 
     /**

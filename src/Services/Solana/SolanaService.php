@@ -2,13 +2,13 @@
 
 namespace Roberts\LaravelWallets\Services\Solana;
 
+use Illuminate\Support\Collection;
 use Roberts\LaravelWallets\Protocols\Solana\RpcClient;
 use Roberts\LaravelWallets\Protocols\Solana\RpcException;
-use Illuminate\Support\Collection;
 
 /**
  * High-level Solana service using the RPC client
- * 
+ *
  * Provides convenient methods for common Solana operations
  */
 class SolanaService
@@ -23,8 +23,8 @@ class SolanaService
     public function getAccountDetails(string $pubkey): ?array
     {
         $accountInfo = $this->rpcClient->getAccountInfo($pubkey);
-        
-        if (!$accountInfo) {
+
+        if (! $accountInfo) {
             return null;
         }
 
@@ -53,17 +53,17 @@ class SolanaService
                 ['programId' => 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'] // SPL Token program
             );
 
-            if (!$tokenAccounts || !isset($tokenAccounts['value'])) {
+            if (! $tokenAccounts || ! isset($tokenAccounts['value'])) {
                 return collect([]);
             }
 
             return collect($tokenAccounts['value'])->map(function ($account) {
                 $accountInfo = $account['account'] ?? [];
                 $pubkey = $account['pubkey'] ?? '';
-                
+
                 // Decode token account data if available
                 $data = $accountInfo['data']['parsed'] ?? null;
-                
+
                 return [
                     'pubkey' => $pubkey,
                     'mint' => $data['info']['mint'] ?? null,
@@ -86,10 +86,10 @@ class SolanaService
     {
         try {
             $signatures = $this->rpcClient->getSignaturesForAddress($address, [
-                'limit' => $limit
+                'limit' => $limit,
             ]);
 
-            if (!$signatures) {
+            if (! $signatures) {
                 return collect([]);
             }
 
@@ -117,10 +117,10 @@ class SolanaService
         try {
             $transaction = $this->rpcClient->getTransaction($signature, [
                 'encoding' => 'jsonParsed',
-                'maxSupportedTransactionVersion' => 0
+                'maxSupportedTransactionVersion' => 0,
             ]);
 
-            if (!$transaction) {
+            if (! $transaction) {
                 return null;
             }
 
@@ -165,15 +165,15 @@ class SolanaService
     {
         try {
             $epochInfo = $this->rpcClient->getEpochInfo();
-            
-            if (!$epochInfo) {
+
+            if (! $epochInfo) {
                 return null;
             }
 
             // Calculate additional useful information
             $slotsInEpoch = $epochInfo['slotsInEpoch'] ?? 0;
             $slotIndex = $epochInfo['slotIndex'] ?? 0;
-            
+
             $progressPercent = $slotsInEpoch > 0 ? ($slotIndex / $slotsInEpoch) * 100 : 0;
             $slotsRemaining = $slotsInEpoch - $slotIndex;
 
@@ -231,20 +231,20 @@ class SolanaService
 
             for ($i = 0; $i < $maxRetries; $i++) {
                 sleep($retryDelay);
-                
+
                 $status = $this->rpcClient->getSignatureStatuses([$signature]);
-                
+
                 if ($status && isset($status['value'][0])) {
                     $signatureStatus = $status['value'][0];
-                    
+
                     if ($signatureStatus) {
                         if ($signatureStatus['err']) {
-                            throw new RpcException('Transaction failed: ' . json_encode($signatureStatus['err']));
+                            throw new RpcException('Transaction failed: '.json_encode($signatureStatus['err']));
                         }
-                        
-                        if ($signatureStatus['confirmationStatus'] === 'confirmed' || 
+
+                        if ($signatureStatus['confirmationStatus'] === 'confirmed' ||
                             $signatureStatus['confirmationStatus'] === 'finalized') {
-                            
+
                             return [
                                 'signature' => $signature,
                                 'status' => $signatureStatus,
@@ -256,7 +256,6 @@ class SolanaService
             }
 
             throw new RpcException('Transaction confirmation timeout');
-
         } catch (RpcException $e) {
             return [
                 'signature' => $signature ?? null,
@@ -274,8 +273,8 @@ class SolanaService
         try {
             // Get token supply first
             $supply = $this->rpcClient->getTokenSupply($mintAddress);
-            
-            if (!$supply) {
+
+            if (! $supply) {
                 return null;
             }
 
@@ -312,8 +311,8 @@ class SolanaService
     {
         try {
             $accountInfo = $this->rpcClient->getAccountInfo($pubkey);
-            
-            if (!$accountInfo || !isset($accountInfo['value'])) {
+
+            if (! $accountInfo || ! isset($accountInfo['value'])) {
                 return [
                     'exists' => false,
                     'rent_exempt' => false,
@@ -322,8 +321,8 @@ class SolanaService
             }
 
             $lamports = $accountInfo['value']['lamports'] ?? 0;
-            $dataLength = isset($accountInfo['value']['data']) 
-                ? strlen(base64_decode($accountInfo['value']['data'][0] ?? '')) 
+            $dataLength = isset($accountInfo['value']['data'])
+                ? strlen(base64_decode($accountInfo['value']['data'][0] ?? ''))
                 : 0;
 
             $minBalance = $this->getRentExemptionBalance($dataLength);

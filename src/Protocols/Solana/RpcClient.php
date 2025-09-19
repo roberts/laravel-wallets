@@ -4,29 +4,33 @@ namespace Roberts\LaravelWallets\Protocols\Solana;
 
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Exception\GuzzleException;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 /**
  * Comprehensive Solana RPC Client
- * 
+ *
  * A Laravel-focused wrapper for the Solana RPC API that follows Laravel best practices.
  * This client provides all functionality available through the Solana RPC interface.
- * 
+ *
  * @link https://docs.solana.com/api/http
  */
 class RpcClient
 {
     protected HttpClient $httpClient;
+
     private string $endpoint;
+
     private array $defaultHeaders;
+
     private int $timeout;
+
     private bool $useCache;
+
     private int $cacheTimeout;
 
     public function __construct(
-        string $endpoint = null,
+        ?string $endpoint = null,
         array $config = []
     ) {
         $this->endpoint = $endpoint ?? config('wallets.drivers.sol.rpc_url', 'https://api.mainnet-beta.solana.com');
@@ -53,7 +57,7 @@ class RpcClient
     {
         $id = $options['id'] ?? time();
         $commitment = $options['commitment'] ?? 'confirmed';
-        
+
         // Prepare the RPC request
         $payload = [
             'jsonrpc' => '2.0',
@@ -63,15 +67,15 @@ class RpcClient
         ];
 
         // Add commitment to params if supported
-        if ($this->methodSupportsCommitment($method) && !$this->hasCommitmentInParams($params)) {
+        if ($this->methodSupportsCommitment($method) && ! $this->hasCommitmentInParams($params)) {
             $payload['params'][] = ['commitment' => $commitment];
         }
 
         $cacheKey = null;
-        
+
         // Check cache for read-only methods
         if ($this->useCache && $this->isReadOnlyMethod($method)) {
-            $cacheKey = 'solana_rpc_' . md5(json_encode($payload));
+            $cacheKey = 'solana_rpc_'.md5(json_encode($payload));
             $cached = Cache::get($cacheKey);
             if ($cached !== null) {
                 return $cached;
@@ -110,7 +114,7 @@ class RpcClient
                 'endpoint' => $this->endpoint,
             ]);
 
-            throw new RpcException('RPC request failed: ' . $e->getMessage(), 0, $e);
+            throw new RpcException('RPC request failed: '.$e->getMessage(), 0, $e);
         }
     }
 
@@ -124,8 +128,8 @@ class RpcClient
     public function getAccountInfo(string $pubkey, array $options = []): ?array
     {
         $params = [$pubkey];
-        
-        if (!empty($options)) {
+
+        if (! empty($options)) {
             $params[] = $options;
         }
 
@@ -138,8 +142,8 @@ class RpcClient
     public function getMultipleAccounts(array $pubkeys, array $options = []): ?array
     {
         $params = [$pubkeys];
-        
-        if (!empty($options)) {
+
+        if (! empty($options)) {
             $params[] = $options;
         }
 
@@ -152,8 +156,8 @@ class RpcClient
     public function getProgramAccounts(string $programId, array $options = []): ?array
     {
         $params = [$programId];
-        
-        if (!empty($options)) {
+
+        if (! empty($options)) {
             $params[] = $options;
         }
 
@@ -166,8 +170,8 @@ class RpcClient
     public function getBalance(string $pubkey, array $options = []): ?array
     {
         $params = [$pubkey];
-        
-        if (!empty($options)) {
+
+        if (! empty($options)) {
             $params[] = $options;
         }
 
@@ -184,8 +188,8 @@ class RpcClient
     public function getBlock(int $slot, array $options = []): ?array
     {
         $params = [$slot];
-        
-        if (!empty($options)) {
+
+        if (! empty($options)) {
             $params[] = $options;
         }
 
@@ -198,8 +202,8 @@ class RpcClient
     public function getBlockHeight(array $options = []): ?int
     {
         $params = [];
-        
-        if (!empty($options)) {
+
+        if (! empty($options)) {
             $params[] = $options;
         }
 
@@ -212,8 +216,8 @@ class RpcClient
     public function getBlockProduction(array $options = []): ?array
     {
         $params = [];
-        
-        if (!empty($options)) {
+
+        if (! empty($options)) {
             $params[] = $options;
         }
 
@@ -234,12 +238,12 @@ class RpcClient
     public function getBlocks(int $startSlot, ?int $endSlot = null, array $options = []): ?array
     {
         $params = [$startSlot];
-        
+
         if ($endSlot !== null) {
             $params[] = $endSlot;
         }
-        
-        if (!empty($options)) {
+
+        if (! empty($options)) {
             $params[] = $options;
         }
 
@@ -252,8 +256,8 @@ class RpcClient
     public function getBlocksWithLimit(int $startSlot, int $limit, array $options = []): ?array
     {
         $params = [$startSlot, $limit];
-        
-        if (!empty($options)) {
+
+        if (! empty($options)) {
             $params[] = $options;
         }
 
@@ -278,8 +282,8 @@ class RpcClient
     public function getTransaction(string $signature, array $options = []): ?array
     {
         $params = [$signature];
-        
-        if (!empty($options)) {
+
+        if (! empty($options)) {
             $params[] = $options;
         }
 
@@ -292,7 +296,7 @@ class RpcClient
     public function getSignatureStatuses(array $signatures, bool $searchTransactionHistory = false): ?array
     {
         $params = [$signatures];
-        
+
         if ($searchTransactionHistory) {
             $params[] = ['searchTransactionHistory' => true];
         }
@@ -306,8 +310,8 @@ class RpcClient
     public function getSignaturesForAddress(string $address, array $options = []): ?array
     {
         $params = [$address];
-        
-        if (!empty($options)) {
+
+        if (! empty($options)) {
             $params[] = $options;
         }
 
@@ -320,8 +324,8 @@ class RpcClient
     public function sendTransaction(string $transaction, array $options = []): string
     {
         $params = [$transaction];
-        
-        if (!empty($options)) {
+
+        if (! empty($options)) {
             $params[] = $options;
         }
 
@@ -334,8 +338,8 @@ class RpcClient
     public function simulateTransaction(string $transaction, array $options = []): ?array
     {
         $params = [$transaction];
-        
-        if (!empty($options)) {
+
+        if (! empty($options)) {
             $params[] = $options;
         }
 
@@ -352,8 +356,8 @@ class RpcClient
     public function getEpochInfo(array $options = []): ?array
     {
         $params = [];
-        
-        if (!empty($options)) {
+
+        if (! empty($options)) {
             $params[] = $options;
         }
 
@@ -390,8 +394,8 @@ class RpcClient
     public function getInflationGovernor(array $options = []): ?array
     {
         $params = [];
-        
-        if (!empty($options)) {
+
+        if (! empty($options)) {
             $params[] = $options;
         }
 
@@ -412,8 +416,8 @@ class RpcClient
     public function getInflationReward(array $addresses, array $options = []): ?array
     {
         $params = [$addresses];
-        
-        if (!empty($options)) {
+
+        if (! empty($options)) {
             $params[] = $options;
         }
 
@@ -426,8 +430,8 @@ class RpcClient
     public function getLargestAccounts(array $options = []): ?array
     {
         $params = [];
-        
-        if (!empty($options)) {
+
+        if (! empty($options)) {
             $params[] = $options;
         }
 
@@ -440,12 +444,12 @@ class RpcClient
     public function getLeaderSchedule(?int $slot = null, array $options = []): ?array
     {
         $params = [];
-        
+
         if ($slot !== null) {
             $params[] = $slot;
         }
-        
-        if (!empty($options)) {
+
+        if (! empty($options)) {
             $params[] = $options;
         }
 
@@ -458,8 +462,8 @@ class RpcClient
     public function getMinimumBalanceForRentExemption(int $accountDataLength, array $options = []): ?int
     {
         $params = [$accountDataLength];
-        
-        if (!empty($options)) {
+
+        if (! empty($options)) {
             $params[] = $options;
         }
 
@@ -472,8 +476,8 @@ class RpcClient
     public function getSlot(array $options = []): ?int
     {
         $params = [];
-        
-        if (!empty($options)) {
+
+        if (! empty($options)) {
             $params[] = $options;
         }
 
@@ -486,8 +490,8 @@ class RpcClient
     public function getSlotLeader(array $options = []): ?string
     {
         $params = [];
-        
-        if (!empty($options)) {
+
+        if (! empty($options)) {
             $params[] = $options;
         }
 
@@ -508,8 +512,8 @@ class RpcClient
     public function getSupply(array $options = []): ?array
     {
         $params = [];
-        
-        if (!empty($options)) {
+
+        if (! empty($options)) {
             $params[] = $options;
         }
 
@@ -522,8 +526,8 @@ class RpcClient
     public function getTransactionCount(array $options = []): ?int
     {
         $params = [];
-        
-        if (!empty($options)) {
+
+        if (! empty($options)) {
             $params[] = $options;
         }
 
@@ -544,8 +548,8 @@ class RpcClient
     public function getVoteAccounts(array $options = []): ?array
     {
         $params = [];
-        
-        if (!empty($options)) {
+
+        if (! empty($options)) {
             $params[] = $options;
         }
 
@@ -562,8 +566,8 @@ class RpcClient
     public function getTokenAccountBalance(string $tokenAccount, array $options = []): ?array
     {
         $params = [$tokenAccount];
-        
-        if (!empty($options)) {
+
+        if (! empty($options)) {
             $params[] = $options;
         }
 
@@ -576,8 +580,8 @@ class RpcClient
     public function getTokenAccountsByOwner(string $owner, array $filter, array $options = []): ?array
     {
         $params = [$owner, $filter];
-        
-        if (!empty($options)) {
+
+        if (! empty($options)) {
             $params[] = $options;
         }
 
@@ -590,8 +594,8 @@ class RpcClient
     public function getTokenAccountsByDelegate(string $delegate, array $filter, array $options = []): ?array
     {
         $params = [$delegate, $filter];
-        
-        if (!empty($options)) {
+
+        if (! empty($options)) {
             $params[] = $options;
         }
 
@@ -604,8 +608,8 @@ class RpcClient
     public function getTokenLargestAccounts(string $tokenMint, array $options = []): ?array
     {
         $params = [$tokenMint];
-        
-        if (!empty($options)) {
+
+        if (! empty($options)) {
             $params[] = $options;
         }
 
@@ -618,8 +622,8 @@ class RpcClient
     public function getTokenSupply(string $tokenMint, array $options = []): ?array
     {
         $params = [$tokenMint];
-        
-        if (!empty($options)) {
+
+        if (! empty($options)) {
             $params[] = $options;
         }
 
@@ -636,8 +640,8 @@ class RpcClient
     public function requestAirdrop(string $pubkey, int $lamports, array $options = []): string
     {
         $params = [$pubkey, $lamports];
-        
-        if (!empty($options)) {
+
+        if (! empty($options)) {
             $params[] = $options;
         }
 
@@ -658,7 +662,7 @@ class RpcClient
     public function getRecentPerformanceSamples(?int $limit = null): ?array
     {
         $params = [];
-        
+
         if ($limit !== null) {
             $params[] = $limit;
         }
@@ -681,7 +685,7 @@ class RpcClient
             'timeout' => $this->timeout,
             'headers' => $this->defaultHeaders,
         ]);
-        
+
         return $this;
     }
 
@@ -699,6 +703,7 @@ class RpcClient
     public function setCache(bool $useCache): self
     {
         $this->useCache = $useCache;
+
         return $this;
     }
 
@@ -708,6 +713,7 @@ class RpcClient
     public function setCacheTimeout(int $seconds): self
     {
         $this->cacheTimeout = $seconds;
+
         return $this;
     }
 
@@ -746,7 +752,7 @@ class RpcClient
     {
         $commitmentMethods = [
             'getAccountInfo',
-            'getBalance', 
+            'getBalance',
             'getBlock',
             'getBlockHeight',
             'getBlockProduction',
@@ -786,6 +792,7 @@ class RpcClient
                 return true;
             }
         }
+
         return false;
     }
 

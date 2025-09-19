@@ -1,44 +1,45 @@
 <?php
 
-use Roberts\LaravelWallets\Protocols\Solana\RpcClient;
-use Roberts\LaravelWallets\Protocols\Solana\RpcException;
 use GuzzleHttp\Client as HttpClient;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\Exception\RequestException;
+use Roberts\LaravelWallets\Protocols\Solana\RpcClient;
+use Roberts\LaravelWallets\Protocols\Solana\RpcException;
 
 describe('Solana RPC Client', function () {
     beforeEach(function () {
-        $this->mockHandler = new MockHandler();
+        $this->mockHandler = new MockHandler;
         $handlerStack = HandlerStack::create($this->mockHandler);
         $httpClient = new HttpClient(['handler' => $handlerStack]);
-        
+
         // We need to create a custom RpcClient for testing
-        $this->rpcClient = new class('https://api.testnet.solana.com') extends RpcClient {
+        $this->rpcClient = new class('https://api.testnet.solana.com') extends RpcClient
+        {
             public function setMockHttpClient(HttpClient $client): void
             {
                 $this->httpClient = $client;
             }
         };
-        
+
         $this->rpcClient->setMockHttpClient($httpClient);
     });
 
     describe('Basic RPC Calls', function () {
         it('makes successful RPC call', function () {
             $expectedResult = ['value' => 123456789];
-            
+
             $this->mockHandler->append(
                 new Response(200, [], json_encode([
                     'jsonrpc' => '2.0',
                     'result' => $expectedResult,
-                    'id' => 1
+                    'id' => 1,
                 ]))
             );
 
             $result = $this->rpcClient->call('getBalance', ['9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM']);
-            
+
             expect($result)->toBe($expectedResult);
         });
 
@@ -49,9 +50,9 @@ describe('Solana RPC Client', function () {
                     'error' => [
                         'code' => -32602,
                         'message' => 'Invalid params',
-                        'data' => null
+                        'data' => null,
                     ],
-                    'id' => 1
+                    'id' => 1,
                 ]))
             );
 
@@ -81,15 +82,15 @@ describe('Solana RPC Client', function () {
                     'executable' => false,
                     'lamports' => 1000000000,
                     'owner' => '11111111111111111111111111111112',
-                    'rentEpoch' => 361
-                ]
+                    'rentEpoch' => 361,
+                ],
             ];
 
             $this->mockHandler->append(
                 new Response(200, [], json_encode([
                     'jsonrpc' => '2.0',
                     'result' => $expectedResult,
-                    'id' => 1
+                    'id' => 1,
                 ]))
             );
 
@@ -100,22 +101,22 @@ describe('Solana RPC Client', function () {
         it('gets multiple accounts', function () {
             $pubkeys = [
                 '9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM',
-                'FEy4VtMZVo8BVwfkTTXHBdw4MZLL6WrhNpnNb8QoFeVt'
+                'FEy4VtMZVo8BVwfkTTXHBdw4MZLL6WrhNpnNb8QoFeVt',
             ];
-            
+
             $expectedResult = [
                 'context' => ['slot' => 123456],
                 'value' => [
                     ['lamports' => 1000000000, 'owner' => '11111111111111111111111111111112'],
-                    ['lamports' => 2000000000, 'owner' => '11111111111111111111111111111112']
-                ]
+                    ['lamports' => 2000000000, 'owner' => '11111111111111111111111111111112'],
+                ],
             ];
 
             $this->mockHandler->append(
                 new Response(200, [], json_encode([
                     'jsonrpc' => '2.0',
                     'result' => $expectedResult,
-                    'id' => 1
+                    'id' => 1,
                 ]))
             );
 
@@ -127,14 +128,14 @@ describe('Solana RPC Client', function () {
             $pubkey = '9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM';
             $expectedResult = [
                 'context' => ['slot' => 123456],
-                'value' => 1000000000
+                'value' => 1000000000,
             ];
 
             $this->mockHandler->append(
                 new Response(200, [], json_encode([
                     'jsonrpc' => '2.0',
                     'result' => $expectedResult,
-                    'id' => 1
+                    'id' => 1,
                 ]))
             );
 
@@ -151,7 +152,7 @@ describe('Solana RPC Client', function () {
                 new Response(200, [], json_encode([
                     'jsonrpc' => '2.0',
                     'result' => $expectedResult,
-                    'id' => 1
+                    'id' => 1,
                 ]))
             );
 
@@ -166,14 +167,14 @@ describe('Solana RPC Client', function () {
                 'blockTime' => 1640995200,
                 'blockhash' => '3Eq21vXNB5s86c62bVuUfTeaMif1N2kUqRPBmGRJhyTA',
                 'parentSlot' => 123455,
-                'previousBlockhash' => '9J7x6vBZtHt7fLCe7bRBFWVnVqYR4WLm5zHN8xt8f2Ks'
+                'previousBlockhash' => '9J7x6vBZtHt7fLCe7bRBFWVnVqYR4WLm5zHN8xt8f2Ks',
             ];
 
             $this->mockHandler->append(
                 new Response(200, [], json_encode([
                     'jsonrpc' => '2.0',
                     'result' => $expectedResult,
-                    'id' => 1
+                    'id' => 1,
                 ]))
             );
 
@@ -190,7 +191,7 @@ describe('Solana RPC Client', function () {
                 new Response(200, [], json_encode([
                     'jsonrpc' => '2.0',
                     'result' => $expectedResult,
-                    'id' => 1
+                    'id' => 1,
                 ]))
             );
 
@@ -207,15 +208,15 @@ describe('Solana RPC Client', function () {
                 'blockTime' => 1640995200,
                 'transaction' => [
                     'message' => ['accountKeys' => [], 'instructions' => []],
-                    'signatures' => [$signature]
-                ]
+                    'signatures' => [$signature],
+                ],
             ];
 
             $this->mockHandler->append(
                 new Response(200, [], json_encode([
                     'jsonrpc' => '2.0',
                     'result' => $expectedResult,
-                    'id' => 1
+                    'id' => 1,
                 ]))
             );
 
@@ -232,16 +233,16 @@ describe('Solana RPC Client', function () {
                         'slot' => 123456,
                         'confirmations' => 10,
                         'err' => null,
-                        'confirmationStatus' => 'confirmed'
-                    ]
-                ]
+                        'confirmationStatus' => 'confirmed',
+                    ],
+                ],
             ];
 
             $this->mockHandler->append(
                 new Response(200, [], json_encode([
                     'jsonrpc' => '2.0',
                     'result' => $expectedResult,
-                    'id' => 1
+                    'id' => 1,
                 ]))
             );
 
@@ -257,7 +258,7 @@ describe('Solana RPC Client', function () {
                 new Response(200, [], json_encode([
                     'jsonrpc' => '2.0',
                     'result' => $expectedResult,
-                    'id' => 1
+                    'id' => 1,
                 ]))
             );
 
@@ -273,15 +274,15 @@ describe('Solana RPC Client', function () {
                     'err' => null,
                     'logs' => ['Program log: Hello, world!'],
                     'accounts' => null,
-                    'unitsConsumed' => 200
-                ]
+                    'unitsConsumed' => 200,
+                ],
             ];
 
             $this->mockHandler->append(
                 new Response(200, [], json_encode([
                     'jsonrpc' => '2.0',
                     'result' => $expectedResult,
-                    'id' => 1
+                    'id' => 1,
                 ]))
             );
 
@@ -298,7 +299,7 @@ describe('Solana RPC Client', function () {
                 new Response(200, [], json_encode([
                     'jsonrpc' => '2.0',
                     'result' => $expectedResult,
-                    'id' => 1
+                    'id' => 1,
                 ]))
             );
 
@@ -309,14 +310,14 @@ describe('Solana RPC Client', function () {
         it('gets version', function () {
             $expectedResult = [
                 'solana-core' => '1.14.17',
-                'feature-set' => 4081031270
+                'feature-set' => 4081031270,
             ];
 
             $this->mockHandler->append(
                 new Response(200, [], json_encode([
                     'jsonrpc' => '2.0',
                     'result' => $expectedResult,
-                    'id' => 1
+                    'id' => 1,
                 ]))
             );
 
@@ -331,14 +332,14 @@ describe('Solana RPC Client', function () {
                 'epoch' => 300,
                 'slotIndex' => 1234,
                 'slotsInEpoch' => 432000,
-                'transactionCount' => 987654321
+                'transactionCount' => 987654321,
             ];
 
             $this->mockHandler->append(
                 new Response(200, [], json_encode([
                     'jsonrpc' => '2.0',
                     'result' => $expectedResult,
-                    'id' => 1
+                    'id' => 1,
                 ]))
             );
 
@@ -356,15 +357,15 @@ describe('Solana RPC Client', function () {
                     'amount' => '1000000000',
                     'decimals' => 9,
                     'uiAmount' => 1.0,
-                    'uiAmountString' => '1'
-                ]
+                    'uiAmountString' => '1',
+                ],
             ];
 
             $this->mockHandler->append(
                 new Response(200, [], json_encode([
                     'jsonrpc' => '2.0',
                     'result' => $expectedResult,
-                    'id' => 1
+                    'id' => 1,
                 ]))
             );
 
@@ -375,7 +376,7 @@ describe('Solana RPC Client', function () {
         it('gets token accounts by owner', function () {
             $owner = '9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM';
             $filter = ['programId' => 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'];
-            
+
             $expectedResult = [
                 'context' => ['slot' => 123456],
                 'value' => [
@@ -384,18 +385,18 @@ describe('Solana RPC Client', function () {
                             'data' => ['', 'base64'],
                             'executable' => false,
                             'lamports' => 2039280,
-                            'owner' => 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+                            'owner' => 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
                         ],
-                        'pubkey' => 'TokenAccountPublicKey'
-                    ]
-                ]
+                        'pubkey' => 'TokenAccountPublicKey',
+                    ],
+                ],
             ];
 
             $this->mockHandler->append(
                 new Response(200, [], json_encode([
                     'jsonrpc' => '2.0',
                     'result' => $expectedResult,
-                    'id' => 1
+                    'id' => 1,
                 ]))
             );
 
@@ -411,15 +412,15 @@ describe('Solana RPC Client', function () {
                     'amount' => '1000000000000000000',
                     'decimals' => 9,
                     'uiAmount' => 1000000000.0,
-                    'uiAmountString' => '1000000000'
-                ]
+                    'uiAmountString' => '1000000000',
+                ],
             ];
 
             $this->mockHandler->append(
                 new Response(200, [], json_encode([
                     'jsonrpc' => '2.0',
                     'result' => $expectedResult,
-                    'id' => 1
+                    'id' => 1,
                 ]))
             );
 
@@ -473,7 +474,7 @@ describe('Solana RPC Client', function () {
                 new Response(200, [], json_encode([
                     'jsonrpc' => '2.0',
                     'result' => $expectedResult,
-                    'id' => 1
+                    'id' => 1,
                 ]))
             );
 
