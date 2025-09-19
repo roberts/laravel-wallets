@@ -8,7 +8,9 @@ use Roberts\LaravelWallets\Contracts\SecurityServiceInterface;
 use Roberts\LaravelWallets\Protocols\Ethereum\Client as EthereumClient;
 use Roberts\LaravelWallets\Protocols\Ethereum\WalletAdapter as EthereumWalletAdapter;
 use Roberts\LaravelWallets\Protocols\Solana\Client as SolanaClient;
+use Roberts\LaravelWallets\Protocols\Solana\RpcClient as SolanaRpcClient;
 use Roberts\LaravelWallets\Protocols\Solana\WalletAdapter as SolanaWalletAdapter;
+use Roberts\LaravelWallets\Services\Solana\SolanaService;
 use Roberts\LaravelWallets\Services\Base58Service;
 use Roberts\LaravelWallets\Services\Bip39Service;
 use Roberts\LaravelWallets\Services\EncryptionService;
@@ -64,6 +66,27 @@ class WalletsServiceProvider extends PackageServiceProvider
             $this->app->bind(SolanaClient::class, function ($app) {
                 return new SolanaClient(
                     $app->make(Base58Service::class)
+                );
+            });
+        }
+
+        // Register Solana RPC client
+        if (class_exists(SolanaRpcClient::class)) {
+            $this->app->singleton(SolanaRpcClient::class, function ($app) {
+                $config = config('wallets.drivers.sol', []);
+                $endpoint = $config['use_testnet'] ?? false 
+                    ? ($config['testnet_rpc_url'] ?? 'https://api.testnet.solana.com')
+                    : ($config['rpc_url'] ?? 'https://api.mainnet-beta.solana.com');
+
+                return new SolanaRpcClient($endpoint, $config);
+            });
+        }
+
+        // Register Solana service
+        if (class_exists(SolanaService::class)) {
+            $this->app->singleton(SolanaService::class, function ($app) {
+                return new SolanaService(
+                    $app->make(SolanaRpcClient::class)
                 );
             });
         }
