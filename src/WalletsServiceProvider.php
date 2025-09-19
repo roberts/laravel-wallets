@@ -38,6 +38,15 @@ class WalletsServiceProvider extends PackageServiceProvider
             ->hasMigration('2025_08_18_000200_create_key_releases_table')
             ->hasMigration('2025_08_18_000300_create_wallet_audit_logs_table')
             ->hasCommand(WalletsCommand::class);
+
+        // Register Filament Plugin if Filament is installed
+        if (class_exists(\Filament\Facades\Filament::class)) {
+            \Filament\Facades\Filament::serving(function () {
+                \Filament\Facades\Filament::registerPlugin(
+                    \Roberts\LaravelWallets\Filament\WalletsPlugin::make()
+                );
+            });
+        }
     }
 
     public function packageBooted(): void
