@@ -84,7 +84,8 @@
                 "Roberts\\LaravelWallets\\WalletsServiceProvider"
             ],
             "aliases": {
-                "Wallets": "Roberts\\LaravelWallets\\Facades\\Wallets"
+                "Wallets": "Roberts\\LaravelWallets\\Facades\\Wallets",
+                "SolanaRpc": "Roberts\\LaravelWallets\\Facades\\SolanaRpc"
             }
         }
     },
