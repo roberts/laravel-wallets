@@ -68,23 +68,29 @@ class WalletResource extends Resource
             return false;
         }
 
+        // This resource should be available on all tenants for admin users
         // Check if user has admin status - this should work on all tenants
-        // This is a basic implementation - adjust based on your admin role logic
         if (method_exists($user, 'isAdmin')) {
             return $user->isAdmin();
         }
 
-        // Fallback: check for common admin role patterns
+        // Check for common admin role patterns
         if (method_exists($user, 'hasRole')) {
             return $user->hasRole('admin') || $user->hasRole('super-admin');
         }
 
-        // Additional fallback: check for admin-related methods
+        // Check for permission-based access
         if (method_exists($user, 'can')) {
             return $user->can('manage wallets') || $user->can('admin');
         }
 
+        // If using Spatie permission package
+        if (method_exists($user, 'hasPermissionTo')) {
+            return $user->hasPermissionTo('manage wallets') || $user->hasPermissionTo('admin');
+        }
+
         // Final fallback - always allow (should be configured properly in real usage)
+        // In production, you should replace this with your specific admin logic
         return true;
     }
 

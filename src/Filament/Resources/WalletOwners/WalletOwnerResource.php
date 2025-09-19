@@ -73,6 +73,15 @@ class WalletOwnerResource extends Resource
             return false;
         }
 
+        // Check if we're on the primary tenancy domain
+        $currentDomain = request()->getHost();
+        $primaryDomain = config('app.url'); // or however primary domain is configured
+        
+        // This resource should only be available on primary domain
+        if (! str_contains($primaryDomain, $currentDomain)) {
+            return false;
+        }
+
         // Check if we have the SuperAdmin service from tenancy package
         if (class_exists('Roberts\\LaravelSingledbTenancy\\Services\\SuperAdmin')) {
             return app('Roberts\\LaravelSingledbTenancy\\Services\\SuperAdmin')->is($user);

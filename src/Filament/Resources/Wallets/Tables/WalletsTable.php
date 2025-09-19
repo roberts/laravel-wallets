@@ -18,6 +18,22 @@ class WalletsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(function ($query) {
+                // Get current tenant context if available
+                $currentTenantId = config('tenancy.tenant_id');
+                
+                if ($currentTenantId) {
+                    // Show wallets that have ownership records for this tenant,
+                    // plus external wallets (which can be watched by all tenants)
+                    $query->where(function ($query) use ($currentTenantId) {
+                        $query->whereHas('owners', function ($query) use ($currentTenantId) {
+                            $query->where('tenant_id', $currentTenantId);
+                        })->orWhere('control_type', \Roberts\LaravelWallets\Enums\ControlType::EXTERNAL);
+                    });
+                }
+                
+                return $query;
+            })
             ->columns([
                 TextColumn::make('uuid')
                     ->label('UUID')
@@ -68,6 +84,35 @@ class WalletsTable
                     ->badge()
                     ->color('primary')
                     ->sortable(),
+
+                TextColumn::make('current_tenant_access')
+                    ->label('Access')
+                    ->getStateUsing(function ($record) {
+                        $currentTenantId = config('tenancy.tenant_id');
+                        if (! $currentTenantId) {
+                            return 'N/A';
+                        }
+                        
+                        $ownershipExists = $record->owners()
+                            ->where('tenant_id', $currentTenantId)
+                            ->exists();
+                            
+                        if ($ownershipExists) {
+                            return 'Owned';
+                        } elseif ($record->control_type === \Roberts\LaravelWallets\Enums\ControlType::EXTERNAL) {
+                            return 'Watch';
+                        } else {
+                            return 'None';
+                        }
+                    })
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'Owned' => 'success',
+                        'Watch' => 'info',
+                        'None' => 'gray',
+                        'N/A' => 'warning',
+                        default => 'gray',
+                    }),
 
                 TextColumn::make('metadata')
                     ->label('Metadata')

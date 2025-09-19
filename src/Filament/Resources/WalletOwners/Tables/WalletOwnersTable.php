@@ -8,7 +8,10 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class WalletOwnersTable
 {
@@ -97,7 +100,41 @@ class WalletOwnersTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                // TODO: Add filters for protocol, control type, tenant, etc.
+                SelectFilter::make('tenant_id')
+                    ->label('Tenant')
+                    ->options(function () {
+                        // Get unique tenant IDs from wallet owners
+                        $tenantIds = \Roberts\LaravelWallets\Models\WalletOwner::distinct()->pluck('tenant_id')->toArray();
+                        return array_combine($tenantIds, array_map(fn($id) => "Tenant {$id}", $tenantIds));
+                    })
+                    ->multiple(),
+
+                SelectFilter::make('wallet.protocol')
+                    ->label('Protocol')
+                    ->relationship('wallet', 'protocol')
+                    ->options([
+                        'eth' => 'Ethereum',
+                        'sol' => 'Solana',
+                    ])
+                    ->multiple(),
+
+                SelectFilter::make('wallet.control_type')
+                    ->label('Control Type')
+                    ->relationship('wallet', 'control_type')
+                    ->options([
+                        'custodial' => 'Custodial',
+                        'shared' => 'Shared',
+                        'external' => 'External',
+                    ])
+                    ->multiple(),
+
+                Filter::make('has_control')
+                    ->label('Has Control')
+                    ->query(fn (Builder $query): Builder => $query->whereNotNull('encrypted_private_key')),
+
+                Filter::make('watch_only')
+                    ->label('Watch Only')
+                    ->query(fn (Builder $query): Builder => $query->whereNull('encrypted_private_key')),
             ])
             ->recordActions([
                 EditAction::make(),
