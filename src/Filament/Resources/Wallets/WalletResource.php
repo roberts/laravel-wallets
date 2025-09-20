@@ -9,7 +9,6 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 use Roberts\LaravelWallets\Filament\Resources\Wallets\Pages\CreateWallet;
-use Roberts\LaravelWallets\Filament\Resources\Wallets\Pages\EditWallet;
 use Roberts\LaravelWallets\Filament\Resources\Wallets\Pages\ListWallets;
 use Roberts\LaravelWallets\Filament\Resources\Wallets\Schemas\WalletForm;
 use Roberts\LaravelWallets\Filament\Resources\Wallets\Tables\WalletsTable;
@@ -51,7 +50,6 @@ class WalletResource extends Resource
         return [
             'index' => ListWallets::route('/'),
             'create' => CreateWallet::route('/create'),
-            'edit' => EditWallet::route('/{record}/edit'),
         ];
     }
 
@@ -80,8 +78,8 @@ class WalletResource extends Resource
         }
 
         // Check for permission-based access
-        if (method_exists($user, 'can')) {
-            return $user->can('manage wallets') || $user->can('admin');
+        if ($user->can('manage wallets') || $user->can('admin')) {
+            return true;
         }
 
         // If using Spatie permission package

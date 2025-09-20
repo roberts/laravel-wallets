@@ -2,10 +2,10 @@
 
 namespace Roberts\LaravelWallets\Filament\Resources\Wallets\Schemas;
 
-use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
 use Roberts\LaravelWallets\Enums\ControlType;
 use Roberts\LaravelWallets\Enums\Protocol;
@@ -48,16 +48,11 @@ class WalletForm
                     ->options(ControlType::class)
                     ->enum(ControlType::class)
                     ->columnSpan(1)
-                    ->helperText('How this wallet is controlled')
-                    ->descriptions([
-                        'custodial' => ControlType::CUSTODIAL->description(),
-                        'shared' => ControlType::SHARED->description(),
-                        'external' => ControlType::EXTERNAL->description(),
-                    ]),
+                    ->helperText('How this wallet is controlled'),
 
-                Placeholder::make('metadata_info')
+                TextEntry::make('metadata_info')
                     ->label('Metadata Information')
-                    ->content('Use the metadata field below to store additional wallet information as JSON.')
+                    ->state('Use the metadata field below to store additional wallet information as JSON.')
                     ->columnSpan(1)
                     ->hiddenOn('create'),
 
@@ -70,9 +65,9 @@ class WalletForm
                     ->placeholder('{"chain_id": 1, "name": "Main Wallet"}')
                     ->rules(['nullable', 'json']),
 
-                Placeholder::make('timestamps')
+                TextEntry::make('timestamps')
                     ->label('Timestamps')
-                    ->content(fn ($record) => $record ?
+                    ->state(fn ($record) => $record ?
                         "Created: {$record->created_at->format('M j, Y g:i A')} | Updated: {$record->updated_at->format('M j, Y g:i A')}" :
                         'Will be set automatically on creation'
                     )

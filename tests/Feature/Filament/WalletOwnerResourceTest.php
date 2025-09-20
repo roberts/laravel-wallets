@@ -33,10 +33,10 @@ it('validates wallet owner resource access control', function () {
     // Since we can't easily test the SuperAdmin service without proper setup,
     // we'll just test that the access methods exist and return boolean values
     $canAccess = WalletOwnerResource::canAccess();
-    expect($canAccess)->toBeInArray([true, false]);
+    expect($canAccess)->toBeBool();
 
     $shouldRegisterNavigation = WalletOwnerResource::shouldRegisterNavigation();
-    expect($shouldRegisterNavigation)->toBeInArray([true, false]);
+    expect($shouldRegisterNavigation)->toBeBool();
 });
 
 it('can check wallet control status', function () {

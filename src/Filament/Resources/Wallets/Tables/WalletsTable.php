@@ -33,16 +33,6 @@ class WalletsTable
                 return $query;
             })
             ->columns([
-                TextColumn::make('uuid')
-                    ->label('UUID')
-                    ->searchable()
-                    ->sortable()
-                    ->copyable()
-                    ->copyMessage('UUID copied!')
-                    ->copyMessageDuration(1500)
-                    ->limit(8)
-                    ->tooltip(fn ($record) => $record->uuid),
-
                 TextColumn::make('protocol')
                     ->label('Protocol')
                     ->badge()
@@ -74,13 +64,6 @@ class WalletsTable
                         default => 'gray',
                     })
                     ->formatStateUsing(fn ($state) => ucfirst($state))
-                    ->sortable(),
-
-                TextColumn::make('owners_count')
-                    ->label('Owners')
-                    ->counts('owners')
-                    ->badge()
-                    ->color('primary')
                     ->sortable(),
 
                 TextColumn::make('current_tenant_access')
@@ -151,13 +134,6 @@ class WalletsTable
             ])
             ->recordActions([
                 ViewAction::make(),
-                EditAction::make(),
-                DeleteAction::make(),
-            ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
             ])
             ->defaultSort('created_at', 'desc');
     }

@@ -24,21 +24,20 @@ it('can register plugin resources', function () {
 
     $plugin = WalletsPlugin::make();
 
-    // Mock a panel to test registration
-    $panel = new class
-    {
-        public $discoveredResources = [];
-
-        public function discoverResources(string $in, string $for): self
-        {
-            $this->discoveredResources[] = ['in' => $in, 'for' => $for];
-
-            return $this;
-        }
-    };
+    // Create a mock panel that implements the Panel interface methods we need
+    $panel = Mockery::mock(\Filament\Panel::class);
+    $panel->shouldReceive('discoverResources')
+        ->once()
+        ->with(
+            Mockery::on(function ($in) {
+                return str_ends_with($in, '/Resources');
+            }),
+            'Roberts\\LaravelWallets\\Filament\\Resources'
+        )
+        ->andReturnSelf();
 
     $plugin->register($panel);
 
-    expect($panel->discoveredResources)->toHaveCount(1);
-    expect($panel->discoveredResources[0]['for'])->toBe('Roberts\\LaravelWallets\\Filament\\Resources');
+    // If we get here without exceptions, the registration worked
+    expect(true)->toBeTrue();
 });

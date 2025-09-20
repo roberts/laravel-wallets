@@ -8,7 +8,6 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
-use Roberts\LaravelWallets\Filament\Resources\WalletOwners\Pages\CreateWalletOwner;
 use Roberts\LaravelWallets\Filament\Resources\WalletOwners\Pages\EditWalletOwner;
 use Roberts\LaravelWallets\Filament\Resources\WalletOwners\Pages\ListWalletOwners;
 use Roberts\LaravelWallets\Filament\Resources\WalletOwners\Schemas\WalletOwnerForm;
@@ -48,7 +47,6 @@ class WalletOwnerResource extends Resource
     {
         return [
             'index' => ListWalletOwners::route('/'),
-            'create' => CreateWalletOwner::route('/create'),
             'edit' => EditWalletOwner::route('/{record}/edit'),
         ];
     }
