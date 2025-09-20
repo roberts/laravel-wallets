@@ -5,78 +5,82 @@ use Roberts\LaravelWallets\Models\Wallet;
 use Roberts\LaravelWallets\Models\WalletOwner;
 use Roberts\LaravelWallets\Tests\TestUser;
 
-beforeEach(function () {
-    // Create a test user
-    $this->user = TestUser::factory()->create();
-    $this->actingAs($this->user);
-});
+describe('Filament Wallet Owner Resource', function () {
 
-it('can render wallet owner resource list page', function () {
-    // Create some test wallet owners
-    $wallet = Wallet::factory()->create();
-    $owner = TestUser::factory()->create();
+    beforeEach(function () {
+        // Create and authenticate test user
+        $this->user = TestUser::factory()->create();
+        $this->actingAs($this->user);
 
-    $walletOwner = WalletOwner::factory()->create([
-        'wallet_id' => $wallet->id,
-        'owner_id' => $owner->id,
-        'owner_type' => get_class($owner),
-        'tenant_id' => 1,
-    ]);
+        // Create shared test entities
+        $this->wallet = Wallet::factory()->create();
+        $this->owner = TestUser::factory()->create();
 
-    expect($walletOwner)->toBeInstanceOf(WalletOwner::class);
-    expect($walletOwner->wallet_id)->toBe($wallet->id);
-    expect($walletOwner->owner_id)->toBe($owner->id);
-});
+        // Shared wallet owner test data
+        $this->walletOwnerData = [
+            'wallet_id' => $this->wallet->id,
+            'owner_id' => $this->owner->id,
+            'owner_type' => get_class($this->owner),
+            'tenant_id' => 1,
+        ];
+    });
 
-it('validates wallet owner resource access control', function () {
-    // Test that the resource respects access control
-    // Since we can't easily test the SuperAdmin service without proper setup,
-    // we'll just test that the access methods exist and return boolean values
-    $canAccess = WalletOwnerResource::canAccess();
-    expect($canAccess)->toBeBool();
+    describe('Resource Access Control', function () {
+        it('validates wallet owner resource access control', function () {
+            // Test that the resource respects access control
+            // Since we can't easily test the SuperAdmin service without proper setup,
+            // we'll just test that the access methods exist and return boolean values
+            $canAccess = WalletOwnerResource::canAccess();
+            expect($canAccess)->toBeBool();
 
-    $shouldRegisterNavigation = WalletOwnerResource::shouldRegisterNavigation();
-    expect($shouldRegisterNavigation)->toBeBool();
-});
+            $shouldRegisterNavigation = WalletOwnerResource::shouldRegisterNavigation();
+            expect($shouldRegisterNavigation)->toBeBool();
+        });
+    });
 
-it('can check wallet control status', function () {
-    $wallet = Wallet::factory()->create();
-    $owner = TestUser::factory()->create();
+    describe('Wallet Owner Management', function () {
+        it('can render wallet owner resource list page', function () {
+            $walletOwner = WalletOwner::factory()->create($this->walletOwnerData);
 
-    // Create wallet owner without private key (watch-only)
-    $walletOwnerWatchOnly = WalletOwner::factory()->create([
-        'wallet_id' => $wallet->id,
-        'owner_id' => $owner->id,
-        'owner_type' => get_class($owner),
-        'tenant_id' => 1,
-        'encrypted_private_key' => null,
-    ]);
+            expect($walletOwner)->toBeInstanceOf(WalletOwner::class);
+            expect($walletOwner->wallet_id)->toBe($this->wallet->id);
+            expect($walletOwner->owner_id)->toBe($this->owner->id);
+        });
 
-    expect($walletOwnerWatchOnly->hasControl())->toBeFalse();
+        it('can access wallet relationship from wallet owner', function () {
+            $walletOwner = WalletOwner::factory()->create($this->walletOwnerData);
 
-    // Create wallet owner with private key (full control)
-    $walletOwnerWithControl = WalletOwner::factory()->create([
-        'wallet_id' => $wallet->id,
-        'owner_id' => $owner->id,
-        'owner_type' => get_class($owner),
-        'tenant_id' => 2, // Different tenant
-        'encrypted_private_key' => 'some_encrypted_key',
-    ]);
+            expect($walletOwner->wallet)->toBeInstanceOf(Wallet::class);
+            expect($walletOwner->wallet->id)->toBe($this->wallet->id);
+            expect($walletOwner->wallet->address)->toBe($this->wallet->address);
+        });
+    });
 
-    expect($walletOwnerWithControl->hasControl())->toBeTrue();
-});
+    describe('Wallet Control Status', function () {
+        it('can check wallet control status', function () {
+            // Create wallet owner without private key (watch-only)
+            $watchOnlyOwner = TestUser::factory()->create();
+            $walletOwnerWatchOnly = WalletOwner::factory()->create([
+                'wallet_id' => $this->wallet->id,
+                'owner_id' => $watchOnlyOwner->id,
+                'owner_type' => get_class($watchOnlyOwner),
+                'tenant_id' => 1,
+                'encrypted_private_key' => null,
+            ]);
 
-it('can access wallet relationship from wallet owner', function () {
-    $wallet = Wallet::factory()->create();
-    $owner = TestUser::factory()->create();
+            expect($walletOwnerWatchOnly->hasControl())->toBeFalse();
 
-    $walletOwner = WalletOwner::factory()->create([
-        'wallet_id' => $wallet->id,
-        'owner_id' => $owner->id,
-        'owner_type' => get_class($owner),
-        'tenant_id' => 1,
-    ]);
+            // Create wallet owner with private key (full control) using different owner
+            $controlOwner = TestUser::factory()->create();
+            $walletOwnerWithControl = WalletOwner::factory()->create([
+                'wallet_id' => $this->wallet->id,
+                'owner_id' => $controlOwner->id,
+                'owner_type' => get_class($controlOwner),
+                'tenant_id' => 1,
+                'encrypted_private_key' => 'encrypted_private_key_data',
+            ]);
 
-    expect($walletOwner->wallet)->toBeInstanceOf(Wallet::class);
-    expect($walletOwner->wallet->id)->toBe($wallet->id);
+            expect($walletOwnerWithControl->hasControl())->toBeTrue();
+        });
+    });
 });
