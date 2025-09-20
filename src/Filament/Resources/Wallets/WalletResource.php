@@ -87,9 +87,9 @@ class WalletResource extends Resource
             return $user->hasPermissionTo('manage wallets') || $user->hasPermissionTo('admin');
         }
 
-        // Final fallback - always allow (should be configured properly in real usage)
+        // Final fallback - always deny (secure-by-default)
         // In production, you should replace this with your specific admin logic
-        return true;
+        return false;
     }
 
     public static function shouldRegisterNavigation(): bool
