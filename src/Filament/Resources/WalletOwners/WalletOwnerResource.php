@@ -73,10 +73,11 @@ class WalletOwnerResource extends Resource
 
         // Check if we're on the primary tenancy domain
         $currentDomain = request()->getHost();
-        $primaryDomain = config('app.url'); // or however primary domain is configured
+        $primaryDomainUrl = config('app.url'); // or however primary domain is configured
+        $primaryDomainHost = parse_url($primaryDomainUrl, PHP_URL_HOST);
 
         // This resource should only be available on primary domain
-        if (! str_contains($primaryDomain, $currentDomain)) {
+        if ($primaryDomainHost !== $currentDomain) {
             return false;
         }
 
