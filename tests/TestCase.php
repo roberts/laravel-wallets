@@ -96,6 +96,12 @@ class TestUser extends \Illuminate\Foundation\Auth\User
 
     protected $fillable = ['name', 'email', 'password'];
 
+    // For testing purposes, allow admin access
+    public function isAdmin(): bool
+    {
+        return true;
+    }
+
     // Implement tenant relationship for testing
     public function getTenantId(): int
     {
