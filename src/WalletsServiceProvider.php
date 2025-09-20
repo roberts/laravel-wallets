@@ -79,6 +79,9 @@ class WalletsServiceProvider extends PackageServiceProvider
 
         // Register middleware for security (if needed)
         $this->registerSecurityMiddleware();
+
+        // Auto-register Filament plugin if Filament is available
+        $this->registerFilamentPlugin();
     }
 
     public function packageRegistered(): void
@@ -118,5 +121,35 @@ class WalletsServiceProvider extends PackageServiceProvider
                 ],
             ]);
         }
+    }
+
+    /**
+     * Auto-register Filament plugin if Filament is available.
+     */
+    protected function registerFilamentPlugin(): void
+    {
+        if (! class_exists('Filament\Facades\Filament')) {
+            return;
+        }
+
+        // Use booted callback to register plugin with panels after they're configured
+        $this->app->booted(function () {
+            if (! class_exists('Filament\Facades\Filament')) {
+                return;
+            }
+
+            try {
+                $panels = \Filament\Facades\Filament::getPanels();
+
+                foreach ($panels as $panel) {
+                    if (! $panel->hasPlugin('roberts-laravel-wallets')) {
+                        $panel->plugin(\Roberts\LaravelWallets\Filament\WalletsPlugin::make());
+                    }
+                }
+            } catch (\Exception $e) {
+                // Silently fail if Filament is not properly configured
+                // This can happen during static analysis or testing
+            }
+        });
     }
 }
