@@ -42,7 +42,7 @@ class CreateWallet extends CreateRecord
     protected function handleExternalWalletCreation(array $data): Model
     {
         $user = Auth::user();
-        if (!$user instanceof Model) {
+        if (! $user instanceof Model) {
             throw new \Exception('User not authenticated or not a valid model');
         }
 
@@ -78,7 +78,7 @@ class CreateWallet extends CreateRecord
     {
         try {
             $user = Auth::user();
-            if (!$user instanceof Model) {
+            if (! $user instanceof Model) {
                 throw new \Exception('User not authenticated or not a valid model');
             }
 
