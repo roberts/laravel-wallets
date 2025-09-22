@@ -33,7 +33,14 @@ class RpcClient
         ?string $endpoint = null,
         array $config = []
     ) {
-        $this->endpoint = $endpoint ?? config('wallets.drivers.sol.rpc_url', 'https://api.mainnet-beta.solana.com');
+        if ($endpoint === null) {
+            $useTestnet = config('wallets.drivers.sol.use_testnet', false);
+            $endpoint = $useTestnet 
+                ? config('wallets.drivers.sol.testnet_rpc_url', 'https://api.testnet.solana.com')
+                : config('wallets.drivers.sol.rpc_url', 'https://api.mainnet-beta.solana.com');
+        }
+        
+        $this->endpoint = $endpoint;
         $this->timeout = $config['timeout'] ?? 30;
         $this->useCache = $config['cache'] ?? true;
         $this->cacheTimeout = $config['cache_timeout'] ?? 300; // 5 minutes

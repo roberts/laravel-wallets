@@ -356,7 +356,7 @@ describe('Solana RPC Client', function () {
                 'value' => [
                     'amount' => '1000000000',
                     'decimals' => 9,
-                    'uiAmount' => 1.0,
+                    'uiAmount' => 1,
                     'uiAmountString' => '1',
                 ],
             ];
@@ -411,7 +411,7 @@ describe('Solana RPC Client', function () {
                 'value' => [
                     'amount' => '1000000000000000000',
                     'decimals' => 9,
-                    'uiAmount' => 1000000000.0,
+                    'uiAmount' => 1000000000,
                     'uiAmountString' => '1000000000',
                 ],
             ];

@@ -61,11 +61,9 @@ describe('Solana RPC Integration', function () {
     describe('Facade Usage', function () {
         it('can call methods through facade', function () {
             // Mock a simple response for testing
-            expect(function () {
-                SolanaRpc::setEndpoint('https://api.testnet.solana.com');
-                $endpoint = SolanaRpc::getEndpoint();
-                expect($endpoint)->toBe('https://api.testnet.solana.com');
-            })->not->toThrow();
+            SolanaRpc::setEndpoint('https://api.testnet.solana.com');
+            $endpoint = SolanaRpc::getEndpoint();
+            expect($endpoint)->toBe('https://api.testnet.solana.com');
         });
 
         it('facade provides utility methods', function () {
