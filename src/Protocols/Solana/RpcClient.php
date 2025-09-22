@@ -208,7 +208,7 @@ class RpcClient
         }
 
         $result = $this->call('getBlockHeight', $params);
-        
+
         return is_int($result) ? $result : null;
     }
 
@@ -272,7 +272,7 @@ class RpcClient
     public function getBlockTime(int $block): ?int
     {
         $result = $this->call('getBlockTime', [$block]);
-        
+
         return is_int($result) ? $result : null;
     }
 
@@ -334,7 +334,7 @@ class RpcClient
         }
 
         $result = $this->call('sendTransaction', $params);
-        
+
         return is_string($result) ? $result : '';
     }
 
@@ -384,7 +384,7 @@ class RpcClient
     public function getHealth(): string
     {
         $result = $this->call('getHealth');
-        
+
         return is_string($result) ? $result : 'unknown';
     }
 
@@ -476,7 +476,7 @@ class RpcClient
         }
 
         $result = $this->call('getMinimumBalanceForRentExemption', $params);
-        
+
         return is_int($result) ? $result : null;
     }
 
@@ -492,7 +492,7 @@ class RpcClient
         }
 
         $result = $this->call('getSlot', $params);
-        
+
         return is_int($result) ? $result : null;
     }
 
@@ -508,7 +508,7 @@ class RpcClient
         }
 
         $result = $this->call('getSlotLeader', $params);
-        
+
         return is_string($result) ? $result : null;
     }
 
@@ -546,7 +546,7 @@ class RpcClient
         }
 
         $result = $this->call('getTransactionCount', $params);
-        
+
         return is_int($result) ? $result : null;
     }
 
@@ -662,7 +662,7 @@ class RpcClient
         }
 
         $result = $this->call('requestAirdrop', $params);
-        
+
         return is_string($result) ? $result : '';
     }
 
