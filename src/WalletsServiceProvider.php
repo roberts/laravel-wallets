@@ -2,9 +2,11 @@
 
 namespace Roberts\LaravelWallets;
 
+use Filament\Facades\Filament;
 use Roberts\LaravelWallets\Commands\WalletsCommand;
 use Roberts\LaravelWallets\Contracts\EncryptionServiceInterface;
 use Roberts\LaravelWallets\Contracts\SecurityServiceInterface;
+use Roberts\LaravelWallets\Filament\WalletsPlugin;
 use Roberts\LaravelWallets\Protocols\Ethereum\Client as EthereumClient;
 use Roberts\LaravelWallets\Protocols\Ethereum\WalletAdapter as EthereumWalletAdapter;
 use Roberts\LaravelWallets\Protocols\Solana\Client as SolanaClient;
@@ -57,51 +59,38 @@ class WalletsServiceProvider extends PackageServiceProvider
         $this->app->singleton(Bip39Service::class);
         $this->app->singleton(KeccakService::class);
 
-        // Register protocol-specific clients (if they exist)
-        if (class_exists(EthereumClient::class)) {
-            $this->app->bind(EthereumClient::class);
-        }
+        // Register protocol-specific clients
+        $this->app->bind(EthereumClient::class);
+        $this->app->bind(SolanaClient::class, function ($app) {
+            return new SolanaClient(
+                $app->make(Base58Service::class)
+            );
+        });
 
-        if (class_exists(SolanaClient::class)) {
-            $this->app->bind(SolanaClient::class, function ($app) {
-                return new SolanaClient(
-                    $app->make(Base58Service::class)
-                );
-            });
-        }
+        // Register wallet adapters
+        $this->app->bind(EthereumWalletAdapter::class);
+        $this->app->bind(SolanaWalletAdapter::class);
+
 
         // Register Solana RPC client
-        if (class_exists(SolanaRpcClient::class)) {
-            $this->app->singleton(SolanaRpcClient::class, function ($app) {
-                $config = config('wallets.drivers.sol', []);
-                $endpoint = $config['use_testnet'] ?? false
-                    ? ($config['testnet_rpc_url'] ?? 'https://api.testnet.solana.com')
-                    : ($config['rpc_url'] ?? 'https://api.mainnet-beta.solana.com');
+        $this->app->singleton(SolanaRpcClient::class, function ($app) {
+            $config = config('wallets.drivers.sol', []);
+            $endpoint = $config['use_testnet'] ?? false
+                ? ($config['testnet_rpc_url'] ?? 'https://api.testnet.solana.com')
+                : ($config['rpc_url'] ?? 'https://api.mainnet-beta.solana.com');
 
-                return new SolanaRpcClient($endpoint, $config);
-            });
-        }
+            return new SolanaRpcClient($endpoint, $config);
+        });
 
         // Register Solana service
-        if (class_exists(SolanaService::class)) {
-            $this->app->singleton(SolanaService::class, function ($app) {
-                return new SolanaService(
-                    $app->make(SolanaRpcClient::class)
-                );
-            });
-        }
+        $this->app->singleton(SolanaService::class, function ($app) {
+            return new SolanaService(
+                $app->make(SolanaRpcClient::class)
+            );
+        });
 
-        // Register wallet adapters with security service injection (if they exist)
-        if (class_exists(EthereumWalletAdapter::class)) {
-            $this->app->bind(EthereumWalletAdapter::class);
-        }
-
-        if (class_exists(SolanaWalletAdapter::class)) {
-            $this->app->bind(SolanaWalletAdapter::class);
-        }
-
-        // Register middleware for security (if needed)
-        $this->registerSecurityMiddleware();
+        // Auto-register Filament plugin if Filament is available
+        $this->registerFilamentPlugin();
     }
 
     public function packageRegistered(): void
@@ -111,15 +100,6 @@ class WalletsServiceProvider extends PackageServiceProvider
 
         // Configure security logging channel if not already present
         $this->configureSecurityLogging();
-    }
-
-    /**
-     * Register security middleware if needed.
-     */
-    private function registerSecurityMiddleware(): void
-    {
-        // Security middleware registration can be added here if needed
-        // For now, security is handled at the service level
     }
 
     /**
@@ -141,5 +121,35 @@ class WalletsServiceProvider extends PackageServiceProvider
                 ],
             ]);
         }
+    }
+
+    /**
+     * Auto-register Filament plugin if Filament is available.
+     */
+    protected function registerFilamentPlugin(): void
+    {
+        if (! class_exists('Filament\Facades\Filament')) {
+            return;
+        }
+
+        // Use booted callback to register plugin with panels after they're configured
+        $this->app->booted(function () {
+            if (! class_exists('Filament\Facades\Filament')) {
+                return;
+            }
+
+            try {
+                $panels = Filament::getPanels();
+
+                foreach ($panels as $panel) {
+                    if (! $panel->hasPlugin('roberts-laravel-wallets')) {
+                        $panel->plugin(WalletsPlugin::make());
+                    }
+                }
+            } catch (\Exception $e) {
+                // Silently fail if Filament is not properly configured
+                // This can happen during static analysis or testing
+            }
+        });
     }
 }
