@@ -53,7 +53,7 @@ class RpcClient
     /**
      * Make a generic RPC call to the Solana network
      */
-    public function call(string $method, array $params = [], array $options = []): array
+    public function call(string $method, array $params = [], array $options = []): mixed
     {
         $id = $options['id'] ?? time();
         $commitment = $options['commitment'] ?? 'confirmed';
@@ -207,7 +207,9 @@ class RpcClient
             $params[] = $options;
         }
 
-        return $this->call('getBlockHeight', $params);
+        $result = $this->call('getBlockHeight', $params);
+        
+        return is_int($result) ? $result : null;
     }
 
     /**
@@ -269,7 +271,9 @@ class RpcClient
      */
     public function getBlockTime(int $block): ?int
     {
-        return $this->call('getBlockTime', [$block]);
+        $result = $this->call('getBlockTime', [$block]);
+        
+        return is_int($result) ? $result : null;
     }
 
     // ====================
@@ -329,7 +333,9 @@ class RpcClient
             $params[] = $options;
         }
 
-        return $this->call('sendTransaction', $params);
+        $result = $this->call('sendTransaction', $params);
+        
+        return is_string($result) ? $result : '';
     }
 
     /**
@@ -377,7 +383,9 @@ class RpcClient
      */
     public function getHealth(): string
     {
-        return $this->call('getHealth');
+        $result = $this->call('getHealth');
+        
+        return is_string($result) ? $result : 'unknown';
     }
 
     /**
@@ -467,7 +475,9 @@ class RpcClient
             $params[] = $options;
         }
 
-        return $this->call('getMinimumBalanceForRentExemption', $params);
+        $result = $this->call('getMinimumBalanceForRentExemption', $params);
+        
+        return is_int($result) ? $result : null;
     }
 
     /**
@@ -481,7 +491,9 @@ class RpcClient
             $params[] = $options;
         }
 
-        return $this->call('getSlot', $params);
+        $result = $this->call('getSlot', $params);
+        
+        return is_int($result) ? $result : null;
     }
 
     /**
@@ -495,7 +507,9 @@ class RpcClient
             $params[] = $options;
         }
 
-        return $this->call('getSlotLeader', $params);
+        $result = $this->call('getSlotLeader', $params);
+        
+        return is_string($result) ? $result : null;
     }
 
     /**
@@ -531,7 +545,9 @@ class RpcClient
             $params[] = $options;
         }
 
-        return $this->call('getTransactionCount', $params);
+        $result = $this->call('getTransactionCount', $params);
+        
+        return is_int($result) ? $result : null;
     }
 
     /**
@@ -645,7 +661,9 @@ class RpcClient
             $params[] = $options;
         }
 
-        return $this->call('requestAirdrop', $params);
+        $result = $this->call('requestAirdrop', $params);
+        
+        return is_string($result) ? $result : '';
     }
 
     /**
