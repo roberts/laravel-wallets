@@ -71,7 +71,6 @@ class WalletsServiceProvider extends PackageServiceProvider
         $this->app->bind(EthereumWalletAdapter::class);
         $this->app->bind(SolanaWalletAdapter::class);
 
-
         // Register Solana RPC client
         $this->app->singleton(SolanaRpcClient::class, function ($app) {
             $config = config('wallets.drivers.sol', []);
