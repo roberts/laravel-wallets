@@ -1,18 +1,17 @@
 <?php
 
-use Mockery;
 use Roberts\LaravelWallets\Protocols\Solana\RpcClient;
 use Roberts\LaravelWallets\Protocols\Solana\RpcException;
 use Roberts\LaravelWallets\Services\Solana\SolanaService;
 
 describe('Solana Service', function () {
     beforeEach(function () {
-        $this->mockRpcClient = Mockery::mock(RpcClient::class);
+        $this->mockRpcClient = \Mockery::mock(RpcClient::class);
         $this->solanaService = new SolanaService($this->mockRpcClient);
     });
 
     afterEach(function () {
-        Mockery::close();
+        \Mockery::close();
     });
 
     describe('Account Details', function () {
