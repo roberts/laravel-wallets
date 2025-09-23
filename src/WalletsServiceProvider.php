@@ -10,12 +10,14 @@ use Roberts\LaravelWallets\Filament\WalletsPlugin;
 use Roberts\LaravelWallets\Protocols\Ethereum\Client as EthereumClient;
 use Roberts\LaravelWallets\Protocols\Ethereum\WalletAdapter as EthereumWalletAdapter;
 use Roberts\LaravelWallets\Protocols\Solana\Client as SolanaClient;
+use Roberts\LaravelWallets\Protocols\Solana\RpcClient as SolanaRpcClient;
 use Roberts\LaravelWallets\Protocols\Solana\WalletAdapter as SolanaWalletAdapter;
 use Roberts\LaravelWallets\Services\Base58Service;
 use Roberts\LaravelWallets\Services\Bip39Service;
 use Roberts\LaravelWallets\Services\EncryptionService;
 use Roberts\LaravelWallets\Services\KeccakService;
 use Roberts\LaravelWallets\Services\SecurityService;
+use Roberts\LaravelWallets\Services\Solana\SolanaService;
 use Roberts\LaravelWallets\Services\WalletManager;
 use Roberts\LaravelWallets\Services\WalletService;
 use Spatie\LaravelPackageTools\Package;
@@ -68,6 +70,23 @@ class WalletsServiceProvider extends PackageServiceProvider
         // Register wallet adapters
         $this->app->bind(EthereumWalletAdapter::class);
         $this->app->bind(SolanaWalletAdapter::class);
+
+        // Register Solana RPC client
+        $this->app->singleton(SolanaRpcClient::class, function ($app) {
+            $config = config('wallets.drivers.sol', []);
+            $endpoint = $config['use_testnet'] ?? false
+                ? ($config['testnet_rpc_url'] ?? 'https://api.testnet.solana.com')
+                : ($config['rpc_url'] ?? 'https://api.mainnet-beta.solana.com');
+
+            return new SolanaRpcClient($endpoint, $config);
+        });
+
+        // Register Solana service
+        $this->app->singleton(SolanaService::class, function ($app) {
+            return new SolanaService(
+                $app->make(SolanaRpcClient::class)
+            );
+        });
 
         // Auto-register Filament plugin if Filament is available
         $this->registerFilamentPlugin();
