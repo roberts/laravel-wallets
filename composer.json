@@ -48,7 +48,7 @@
         "phpstan/phpstan-deprecation-rules": "^2.0.3",
         "phpstan/phpstan-phpunit": "^2.0.7",
         "psy/psysh": "^0.12.10",
-        "symfony/translation": "^7.3"
+        "symfony/translation": "^8.0"
     },
     "autoload": {
         "psr-4": {
