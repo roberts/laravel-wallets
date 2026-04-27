@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Roberts\LaravelWallets\Enums\ControlType;
 use Roberts\LaravelWallets\Enums\Protocol;
@@ -74,7 +76,7 @@ describe('Wallet Model', function () {
 
         it('has owners relationship', function () {
             expect($this->wallet->owners())
-                ->toBeInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class);
+                ->toBeInstanceOf(HasMany::class);
         });
 
         it('can have multiple owners', function () {
@@ -97,7 +99,7 @@ describe('Wallet Model', function () {
             Wallet::create($this->validWalletData);
 
             expect(fn () => Wallet::create($this->validWalletData))
-                ->toThrow(\Illuminate\Database\QueryException::class);
+                ->toThrow(QueryException::class);
         });
     });
 });

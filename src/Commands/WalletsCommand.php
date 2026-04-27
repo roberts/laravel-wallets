@@ -3,6 +3,7 @@
 namespace Roberts\LaravelWallets\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Collection;
 use Roberts\LaravelWallets\Enums\ControlType;
 use Roberts\LaravelWallets\Enums\Protocol;
 use Roberts\LaravelWallets\Models\Wallet;
@@ -124,7 +125,7 @@ class WalletsCommand extends Command
             $tenantOwners = WalletOwner::where('tenant_id', $tenantId)->count();
             $this->line("Tenant {$tenantId} Ownership Records: {$tenantOwners}");
         } else {
-            /** @var \Illuminate\Support\Collection<int, object{tenant_id: int, count: int}> $tenantStats */
+            /** @var Collection<int, object{tenant_id: int, count: int}> $tenantStats */
             $tenantStats = WalletOwner::selectRaw('tenant_id, COUNT(*) as count')
                 ->groupBy('tenant_id')
                 ->orderBy('tenant_id')

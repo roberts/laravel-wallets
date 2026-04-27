@@ -2,8 +2,10 @@
 
 namespace Roberts\LaravelWallets\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 use Roberts\LaravelWallets\Database\Factories\EthChainFactory;
 
 /**
@@ -19,12 +21,12 @@ use Roberts\LaravelWallets\Database\Factories\EthChainFactory;
  * @property array<string>|null $rpc_alternates
  * @property bool $is_active
  * @property bool $is_default
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  */
 class EthChain extends Model
 {
-    /** @use HasFactory<\Roberts\LaravelWallets\Database\Factories\EthChainFactory> */
+    /** @use HasFactory<EthChainFactory> */
     use HasFactory;
 
     /**
@@ -81,9 +83,9 @@ class EthChain extends Model
     /**
      * Get all active chains.
      *
-     * @return \Illuminate\Database\Eloquent\Collection<int, EthChain>
+     * @return Collection<int, EthChain>
      */
-    public static function active(): \Illuminate\Database\Eloquent\Collection
+    public static function active(): Collection
     {
         return static::where('is_active', true)->get();
     }

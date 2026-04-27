@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Config\Repository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -12,7 +13,7 @@ use Roberts\LaravelWallets\Services\SecurityService;
 describe('SecurityService', function () {
 
     beforeEach(function () {
-        $this->mockRequest = \Mockery::mock(Request::class);
+        $this->mockRequest = Mockery::mock(Request::class);
         $this->mockRequest->shouldReceive('ip')->andReturn('192.168.1.1');
         $this->mockRequest->shouldReceive('userAgent')->andReturn('TestAgent/1.0');
         $this->mockRequest->shouldReceive('header')->with('X-Request-ID')->andReturn(null);
@@ -32,7 +33,7 @@ describe('SecurityService', function () {
     });
 
     afterEach(function () {
-        \Mockery::close();
+        Mockery::close();
     });
 
     describe('Service Configuration', function () {
@@ -143,8 +144,8 @@ describe('SecurityService', function () {
             Auth::shouldReceive('check')->andReturn(false);
             Auth::shouldReceive('id')->andReturn(null);
 
-            Log::shouldReceive('info')->with(\Mockery::type('string'), \Mockery::type('array'));
-            Log::shouldReceive('error')->with(\Mockery::type('string'), \Mockery::type('array'));
+            Log::shouldReceive('info')->with(Mockery::type('string'), Mockery::type('array'));
+            Log::shouldReceive('error')->with(Mockery::type('string'), Mockery::type('array'));
 
             $result = $this->securityService->canPerformOperation('add_external_wallet');
 
@@ -156,7 +157,7 @@ describe('SecurityService', function () {
         it('works at limit', function () {
             $userId = 123;
 
-            $mockConfig = \Mockery::mock(\Illuminate\Config\Repository::class)->makePartial();
+            $mockConfig = Mockery::mock(Repository::class)->makePartial();
             $mockConfig->shouldReceive('get')
                 ->with('wallets.security.rate_limits', [])
                 ->andReturn([
@@ -213,8 +214,8 @@ describe('SecurityService', function () {
             Auth::shouldReceive('check')->andReturn(true);
             Auth::shouldReceive('id')->andReturn($this->mockUser->id);
 
-            Log::shouldReceive('info')->once()->with(\Mockery::type('string'), \Mockery::type('array'));
-            Log::shouldReceive('error')->with(\Mockery::type('string'), \Mockery::type('array'));
+            Log::shouldReceive('info')->once()->with(Mockery::type('string'), Mockery::type('array'));
+            Log::shouldReceive('error')->with(Mockery::type('string'), Mockery::type('array'));
 
             $this->securityService->auditOperation('test_operation', ['key' => 'value'], 'success');
 

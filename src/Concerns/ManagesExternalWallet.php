@@ -58,7 +58,7 @@ trait ManagesExternalWallet
      */
     public static function addEthereumExternal(
         string $address,
-        \Illuminate\Database\Eloquent\Model $owner,
+        Model $owner,
         int $tenantId,
         array $metadata = []
     ): EthWallet {
@@ -81,7 +81,7 @@ trait ManagesExternalWallet
      */
     public static function addSolanaExternal(
         string $address,
-        \Illuminate\Database\Eloquent\Model $owner,
+        Model $owner,
         int $tenantId,
         array $metadata = []
     ): SolWallet {

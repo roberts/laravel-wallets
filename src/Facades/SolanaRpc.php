@@ -56,7 +56,7 @@ use Roberts\LaravelWallets\Protocols\Solana\RpcClient;
  * @method static float lamportsToSol(int $lamports)
  * @method static int solToLamports(float $sol)
  *
- * @see \Roberts\LaravelWallets\Protocols\Solana\RpcClient
+ * @see RpcClient
  */
 class SolanaRpc extends Facade
 {

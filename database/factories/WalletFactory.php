@@ -8,7 +8,7 @@ use Roberts\LaravelWallets\Enums\Protocol;
 use Roberts\LaravelWallets\Models\Wallet;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Roberts\LaravelWallets\Models\Wallet>
+ * @extends Factory<Wallet>
  */
 class WalletFactory extends Factory
 {
@@ -16,7 +16,7 @@ class WalletFactory extends Factory
 
     public function definition(): array
     {
-        /** @var \Roberts\LaravelWallets\Enums\Protocol $protocol */
+        /** @var Protocol $protocol */
         $protocol = $this->faker->randomElement(Protocol::cases());
 
         // Generate appropriate address for protocol

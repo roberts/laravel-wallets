@@ -9,6 +9,7 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Roberts\LaravelWallets\Models\WalletOwner;
 
 class WalletOwnersTable
 {
@@ -101,7 +102,7 @@ class WalletOwnersTable
                     ->label('Tenant')
                     ->options(function () {
                         // Get unique tenant IDs from wallet owners
-                        $tenantIds = \Roberts\LaravelWallets\Models\WalletOwner::distinct()->pluck('tenant_id')->toArray();
+                        $tenantIds = WalletOwner::distinct()->pluck('tenant_id')->toArray();
 
                         return array_combine($tenantIds, array_map(fn ($id) => "Tenant {$id}", $tenantIds));
                     })

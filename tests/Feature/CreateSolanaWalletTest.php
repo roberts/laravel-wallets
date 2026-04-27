@@ -8,7 +8,7 @@ uses(RefreshDatabase::class);
 
 describe('Solana Wallet Creation (New Architecture)', function () {
     it('creates custodial solana wallet using WalletService', function () {
-        /** @var \Roberts\LaravelWallets\Tests\TestUser $user */
+        /** @var TestUser $user */
         $user = TestUser::factory()->create();
 
         $walletService = app(WalletService::class);
@@ -18,7 +18,7 @@ describe('Solana Wallet Creation (New Architecture)', function () {
     });
 
     it('creates solana wallet using HasWallets trait (legacy compatibility)', function () {
-        /** @var \Roberts\LaravelWallets\Tests\TestUser $user */
+        /** @var TestUser $user */
         $user = TestUser::factory()->create();
 
         // Note: This test would need actual Solana key generation for full implementation

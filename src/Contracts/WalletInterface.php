@@ -17,8 +17,8 @@ interface WalletInterface
     /**
      * Create a new custodial wallet for an owner.
      *
-     * @param  \Roberts\LaravelWallets\Enums\Protocol  $protocol  The wallet protocol
-     * @param  \Illuminate\Database\Eloquent\Model  $owner  The wallet owner
+     * @param  Protocol  $protocol  The wallet protocol
+     * @param  Model  $owner  The wallet owner
      * @param  int  $tenantId  The tenant ID
      * @param  array<string, mixed>|null  $metadata  Additional metadata for the wallet
      * @return array<string, mixed> The created wallet data
@@ -33,9 +33,9 @@ interface WalletInterface
     /**
      * Add an external wallet for an owner.
      *
-     * @param  \Roberts\LaravelWallets\Enums\Protocol  $protocol  The wallet protocol
+     * @param  Protocol  $protocol  The wallet protocol
      * @param  string  $address  The wallet address
-     * @param  \Illuminate\Database\Eloquent\Model  $owner  The wallet owner
+     * @param  Model  $owner  The wallet owner
      * @param  int  $tenantId  The tenant ID
      * @param  array<string, mixed>|null  $metadata  Additional metadata for the wallet
      * @return array<string, mixed> The added wallet data

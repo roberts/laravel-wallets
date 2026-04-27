@@ -6,6 +6,7 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Roberts\LaravelWallets\Enums\ControlType;
 
 class WalletsTable
 {
@@ -22,7 +23,7 @@ class WalletsTable
                     $query->where(function ($query) use ($currentTenantId) {
                         $query->whereHas('owners', function ($query) use ($currentTenantId) {
                             $query->where('tenant_id', $currentTenantId);
-                        })->orWhere('control_type', \Roberts\LaravelWallets\Enums\ControlType::EXTERNAL);
+                        })->orWhere('control_type', ControlType::EXTERNAL);
                     });
                 }
 
@@ -76,7 +77,7 @@ class WalletsTable
 
                         if ($ownershipExists) {
                             return 'Owned';
-                        } elseif ($record->control_type === \Roberts\LaravelWallets\Enums\ControlType::EXTERNAL) {
+                        } elseif ($record->control_type === ControlType::EXTERNAL) {
                             return 'Watch';
                         } else {
                             return 'None';

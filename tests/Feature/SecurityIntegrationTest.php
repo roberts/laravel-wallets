@@ -106,7 +106,7 @@ describe('Security Integration', function () {
 
             // Should NOT decrypt with old key
             expect(fn () => $this->encryptionService->decrypt($rotatedData, $appKey))
-                ->toThrow(\Exception::class, 'Decryption failed');
+                ->toThrow(Exception::class, 'Decryption failed');
         });
 
         it('hmac integrity verification', function () {
@@ -209,7 +209,7 @@ describe('Security Integration', function () {
 
             // Should not be able to access after clearing
             expect(fn () => $secureString->access(fn ($value) => $value))
-                ->toThrow(\Exception::class, 'cleared and cannot be accessed');
+                ->toThrow(Exception::class, 'cleared and cannot be accessed');
         });
 
         it('serialization attacks prevention', function () {
@@ -218,11 +218,11 @@ describe('Security Integration', function () {
 
             // Test SecureString serialization prevention
             expect(fn () => serialize($secureString))
-                ->toThrow(\Exception::class, 'cannot be serialized');
+                ->toThrow(Exception::class, 'cannot be serialized');
 
             // Test SecureWalletData serialization prevention
             expect(fn () => serialize($secureWalletData))
-                ->toThrow(\Exception::class, 'cannot be serialized');
+                ->toThrow(Exception::class, 'cannot be serialized');
         });
     });
 });

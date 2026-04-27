@@ -3,6 +3,7 @@
 namespace Roberts\LaravelWallets\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -63,11 +64,11 @@ class WalletAuditLog extends Model
     /**
      * Get the user who performed the operation.
      *
-     * @return BelongsTo<\Illuminate\Database\Eloquent\Model, $this>
+     * @return BelongsTo<Model, $this>
      */
     public function user(): BelongsTo
     {
-        /** @var class-string<\Illuminate\Database\Eloquent\Model> $userModel */
+        /** @var class-string<Model> $userModel */
         $userModel = config('auth.providers.users.model');
 
         return $this->belongsTo($userModel, 'user_id');
@@ -76,10 +77,10 @@ class WalletAuditLog extends Model
     /**
      * Scope to filter by operation type.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<WalletAuditLog>  $query
-     * @return \Illuminate\Database\Eloquent\Builder<WalletAuditLog>
+     * @param  Builder<WalletAuditLog>  $query
+     * @return Builder<WalletAuditLog>
      */
-    public function scopeForOperation(\Illuminate\Database\Eloquent\Builder $query, string $operation): \Illuminate\Database\Eloquent\Builder
+    public function scopeForOperation(Builder $query, string $operation): Builder
     {
         return $query->where('operation', $operation);
     }
@@ -87,10 +88,10 @@ class WalletAuditLog extends Model
     /**
      * Scope to filter by outcome.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<WalletAuditLog>  $query
-     * @return \Illuminate\Database\Eloquent\Builder<WalletAuditLog>
+     * @param  Builder<WalletAuditLog>  $query
+     * @return Builder<WalletAuditLog>
      */
-    public function scopeWithOutcome(\Illuminate\Database\Eloquent\Builder $query, string $outcome): \Illuminate\Database\Eloquent\Builder
+    public function scopeWithOutcome(Builder $query, string $outcome): Builder
     {
         return $query->where('outcome', $outcome);
     }
@@ -98,10 +99,10 @@ class WalletAuditLog extends Model
     /**
      * Scope to filter by user.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<WalletAuditLog>  $query
-     * @return \Illuminate\Database\Eloquent\Builder<WalletAuditLog>
+     * @param  Builder<WalletAuditLog>  $query
+     * @return Builder<WalletAuditLog>
      */
-    public function scopeForUser(\Illuminate\Database\Eloquent\Builder $query, int $userId): \Illuminate\Database\Eloquent\Builder
+    public function scopeForUser(Builder $query, int $userId): Builder
     {
         return $query->where('user_id', $userId);
     }
@@ -109,10 +110,10 @@ class WalletAuditLog extends Model
     /**
      * Scope to filter by date range.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<WalletAuditLog>  $query
-     * @return \Illuminate\Database\Eloquent\Builder<WalletAuditLog>
+     * @param  Builder<WalletAuditLog>  $query
+     * @return Builder<WalletAuditLog>
      */
-    public function scopeInDateRange(\Illuminate\Database\Eloquent\Builder $query, Carbon $startDate, Carbon $endDate): \Illuminate\Database\Eloquent\Builder
+    public function scopeInDateRange(Builder $query, Carbon $startDate, Carbon $endDate): Builder
     {
         return $query->whereBetween('performed_at', [$startDate, $endDate]);
     }
@@ -120,10 +121,10 @@ class WalletAuditLog extends Model
     /**
      * Scope to find suspicious activities.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<WalletAuditLog>  $query
-     * @return \Illuminate\Database\Eloquent\Builder<WalletAuditLog>
+     * @param  Builder<WalletAuditLog>  $query
+     * @return Builder<WalletAuditLog>
      */
-    public function scopeSuspicious(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    public function scopeSuspicious(Builder $query): Builder
     {
         return $query->whereNotNull('security_flags')
             ->where('security_flags', '!=', '[]')
@@ -133,10 +134,10 @@ class WalletAuditLog extends Model
     /**
      * Scope to find failed operations.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<WalletAuditLog>  $query
-     * @return \Illuminate\Database\Eloquent\Builder<WalletAuditLog>
+     * @param  Builder<WalletAuditLog>  $query
+     * @return Builder<WalletAuditLog>
      */
-    public function scopeFailed(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    public function scopeFailed(Builder $query): Builder
     {
         return $query->whereIn('outcome', ['failure', 'error']);
     }
@@ -144,10 +145,10 @@ class WalletAuditLog extends Model
     /**
      * Scope for recent events.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<WalletAuditLog>  $query
-     * @return \Illuminate\Database\Eloquent\Builder<WalletAuditLog>
+     * @param  Builder<WalletAuditLog>  $query
+     * @return Builder<WalletAuditLog>
      */
-    public function scopeRecent(\Illuminate\Database\Eloquent\Builder $query, int $hours = 24): \Illuminate\Database\Eloquent\Builder
+    public function scopeRecent(Builder $query, int $hours = 24): Builder
     {
         return $query->where('performed_at', '>=', now()->subHours($hours));
     }

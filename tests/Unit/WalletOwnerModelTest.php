@@ -1,6 +1,10 @@
 <?php
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Roberts\LaravelWallets\Enums\ControlType;
 use Roberts\LaravelWallets\Enums\Protocol;
 use Roberts\LaravelWallets\Models\Wallet;
@@ -63,14 +67,14 @@ describe('WalletOwner Model', function () {
 
         it('belongs to wallet', function () {
             expect($this->walletOwner->wallet())
-                ->toBeInstanceOf(\Illuminate\Database\Eloquent\Relations\BelongsTo::class)
+                ->toBeInstanceOf(BelongsTo::class)
                 ->and($this->walletOwner->wallet)->toBeInstanceOf(Wallet::class)
                 ->and($this->walletOwner->wallet->id)->toBe($this->wallet->id);
         });
 
         it('has polymorphic owner relationship', function () {
             expect($this->walletOwner->owner())
-                ->toBeInstanceOf(\Illuminate\Database\Eloquent\Relations\MorphTo::class)
+                ->toBeInstanceOf(MorphTo::class)
                 ->and($this->walletOwner->owner)->toBeInstanceOf(TestUser::class)
                 ->and($this->walletOwner->owner->id)->toBe($this->user->id);
         });
@@ -85,7 +89,7 @@ describe('WalletOwner Model', function () {
                 'encrypted_private_key' => $plainPrivateKey,
             ]);
 
-            $rawValue = \Illuminate\Support\Facades\DB::table('wallet_owners')
+            $rawValue = DB::table('wallet_owners')
                 ->where('id', $walletOwner->id)
                 ->value('encrypted_private_key');
 
@@ -99,7 +103,7 @@ describe('WalletOwner Model', function () {
             WalletOwner::create($this->validOwnershipData);
 
             expect(fn () => WalletOwner::create($this->validOwnershipData))
-                ->toThrow(\Illuminate\Database\QueryException::class);
+                ->toThrow(QueryException::class);
         });
 
         it('allows same user to own different wallets', function () {

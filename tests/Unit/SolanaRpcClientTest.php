@@ -4,6 +4,7 @@ use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Roberts\LaravelWallets\Protocols\Solana\RpcClient;
 use Roberts\LaravelWallets\Protocols\Solana\RpcException;
@@ -63,7 +64,7 @@ describe('Solana RPC Client', function () {
 
         it('handles HTTP errors', function () {
             $this->mockHandler->append(
-                new RequestException('Connection failed', new \GuzzleHttp\Psr7\Request('POST', '/'))
+                new RequestException('Connection failed', new Request('POST', '/'))
             );
 
             expect(function () {

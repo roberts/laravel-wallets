@@ -1,5 +1,8 @@
 <?php
 
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Roberts\LaravelWallets\Facades\SolanaRpc;
 use Roberts\LaravelWallets\Protocols\Solana\RpcClient;
 use Roberts\LaravelWallets\Protocols\Solana\RpcException;
@@ -146,7 +149,7 @@ describe('Solana RPC Integration', function () {
             expect($client)->toBeInstanceOf(RpcClient::class);
 
             // Test that empty collection is returned when no data (without network call)
-            expect(collect([]))->toBeInstanceOf(\Illuminate\Support\Collection::class);
+            expect(collect([]))->toBeInstanceOf(Collection::class);
         });
 
         it('respects Laravel configuration', function () {
@@ -164,16 +167,16 @@ describe('Solana RPC Integration', function () {
 
         it('integrates with Laravel logging', function () {
             // Test that logging integration works (doesn't require network)
-            expect(\Illuminate\Support\Facades\Log::getLogger())->toBeTruthy();
+            expect(Log::getLogger())->toBeTruthy();
         });
 
         it('integrates with Laravel caching', function () {
             // Test cache integration
-            expect(\Illuminate\Support\Facades\Cache::getStore())->toBeTruthy();
+            expect(Cache::getStore())->toBeTruthy();
 
             // Test cache operations
-            \Illuminate\Support\Facades\Cache::put('test-key', 'test-value', 60);
-            $value = \Illuminate\Support\Facades\Cache::get('test-key');
+            Cache::put('test-key', 'test-value', 60);
+            $value = Cache::get('test-key');
             expect($value)->toBe('test-value');
         });
     });

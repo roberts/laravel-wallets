@@ -1,5 +1,7 @@
 <?php
 
+use Filament\Contracts\Plugin;
+use Filament\Panel;
 use Roberts\LaravelWallets\Filament\WalletsPlugin;
 
 describe('Filament Wallets Plugin', function () {
@@ -11,7 +13,7 @@ describe('Filament Wallets Plugin', function () {
 
     afterEach(function () {
         // Clean up any Mockery expectations
-        \Mockery::close();
+        Mockery::close();
     });
 
     describe('Plugin Configuration', function () {
@@ -24,7 +26,7 @@ describe('Filament Wallets Plugin', function () {
             expect($this->plugin->getId())->toBe('roberts-laravel-wallets');
 
             // Test that the plugin implements the correct interface
-            expect($this->plugin)->toBeInstanceOf(\Filament\Contracts\Plugin::class);
+            expect($this->plugin)->toBeInstanceOf(Plugin::class);
         });
     });
 
@@ -34,11 +36,11 @@ describe('Filament Wallets Plugin', function () {
             // In a real Filament environment, this would test resource discovery
 
             // Create a mock panel that implements the Panel interface methods we need
-            $panel = \Mockery::mock(\Filament\Panel::class);
+            $panel = Mockery::mock(Panel::class);
             $panel->shouldReceive('discoverResources')
                 ->once()
                 ->with(
-                    \Mockery::on(function ($in) {
+                    Mockery::on(function ($in) {
                         return str_ends_with($in, '/Resources');
                     }),
                     'Roberts\\LaravelWallets\\Filament\\Resources'

@@ -8,7 +8,7 @@ use Roberts\LaravelWallets\Models\Wallet;
 use Roberts\LaravelWallets\Models\WalletOwner;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Roberts\LaravelWallets\Models\WalletOwner>
+ * @extends Factory<WalletOwner>
  */
 class WalletOwnerFactory extends Factory
 {

@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Roberts\LaravelWallets\Enums\Protocol;
 use Roberts\LaravelWallets\Models\Wallet;
+use Roberts\LaravelWallets\Models\WalletOwner;
 use Roberts\LaravelWallets\Services\WalletService;
 use Roberts\LaravelWallets\Tests\TestUser;
 
@@ -10,7 +11,7 @@ uses(RefreshDatabase::class);
 
 describe('Ethereum Wallet Creation (New Architecture)', function () {
     it('creates custodial ethereum wallet using WalletService', function () {
-        /** @var \Roberts\LaravelWallets\Tests\TestUser $user */
+        /** @var TestUser $user */
         $user = TestUser::factory()->create();
 
         $walletService = app(WalletService::class);
@@ -24,7 +25,7 @@ describe('Ethereum Wallet Creation (New Architecture)', function () {
             ->and($result['wallet']->address)->toStartWith('0x')->toHaveLength(42)
             ->and($result['wallet']->protocol)->toBe(Protocol::ETH);
 
-        expect($result['walletOwner'])->toBeInstanceOf(\Roberts\LaravelWallets\Models\WalletOwner::class)
+        expect($result['walletOwner'])->toBeInstanceOf(WalletOwner::class)
             ->and($result['walletOwner']->owner_id)->toBe($user->id)
             ->and($result['walletOwner']->owner_type)->toBe(TestUser::class);
 
@@ -42,7 +43,7 @@ describe('Ethereum Wallet Creation (New Architecture)', function () {
     });
 
     it('creates ethereum wallet using HasWallets trait (legacy compatibility)', function () {
-        /** @var \Roberts\LaravelWallets\Tests\TestUser $user */
+        /** @var TestUser $user */
         $user = TestUser::factory()->create();
 
         // Use the legacy-compatible method

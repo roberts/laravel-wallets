@@ -5,6 +5,8 @@ namespace Roberts\LaravelWallets\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 use Roberts\LaravelWallets\Database\Factories\WalletFactory;
 use Roberts\LaravelWallets\Enums\ControlType;
 use Roberts\LaravelWallets\Enums\Protocol;
@@ -18,8 +20,8 @@ use Roberts\LaravelWallets\Enums\Protocol;
  * @property string $address
  * @property ControlType $control_type
  * @property array<string, mixed>|null $metadata
- * @property \Illuminate\Support\Carbon $created_at
- * @property \Illuminate\Support\Carbon $updated_at
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
  */
 class Wallet extends Model
 {
@@ -70,7 +72,7 @@ class Wallet extends Model
     /**
      * Get ownership record for a specific owner in a specific tenant
      */
-    public function ownershipFor(\Illuminate\Database\Eloquent\Model $owner, int $tenantId): ?WalletOwner
+    public function ownershipFor(Model $owner, int $tenantId): ?WalletOwner
     {
         /** @var WalletOwner|null */
         return $this->owners()
@@ -83,7 +85,7 @@ class Wallet extends Model
     /**
      * Check if an owner has access to this wallet in a specific tenant
      */
-    public function hasOwner(\Illuminate\Database\Eloquent\Model $owner, int $tenantId): bool
+    public function hasOwner(Model $owner, int $tenantId): bool
     {
         return $this->ownershipFor($owner, $tenantId) !== null;
     }
@@ -96,7 +98,7 @@ class Wallet extends Model
         static::creating(function (Wallet $wallet) {
             // Generate UUID if not set
             if (empty($wallet->uuid)) {
-                $wallet->uuid = (string) \Illuminate\Support\Str::uuid();
+                $wallet->uuid = (string) Str::uuid();
             }
         });
     }

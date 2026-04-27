@@ -2,10 +2,13 @@
 
 namespace Roberts\LaravelWallets\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 use Roberts\LaravelWallets\Database\Factories\WalletOwnerFactory;
 
 /**
@@ -18,8 +21,8 @@ use Roberts\LaravelWallets\Database\Factories\WalletOwnerFactory;
  * @property int $owner_id
  * @property string $owner_type
  * @property string $encrypted_private_key
- * @property \Illuminate\Support\Carbon $created_at
- * @property \Illuminate\Support\Carbon $updated_at
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
  * @property Wallet $wallet
  * @property Model $owner
  */
@@ -61,7 +64,7 @@ class WalletOwner extends Model
     /**
      * Get the parent owner model (e.g., a User)
      *
-     * @return MorphTo<\Illuminate\Database\Eloquent\Model, $this>
+     * @return MorphTo<Model, $this>
      */
     public function owner(): MorphTo
     {
@@ -76,7 +79,7 @@ class WalletOwner extends Model
         static::creating(function (WalletOwner $walletOwner) {
             // Generate UUID if not set
             if (empty($walletOwner->uuid)) {
-                $walletOwner->uuid = (string) \Illuminate\Support\Str::uuid();
+                $walletOwner->uuid = (string) Str::uuid();
             }
         });
     }
@@ -112,10 +115,10 @@ class WalletOwner extends Model
     /**
      * Scope to filter by tenant (for testing compatibility)
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<WalletOwner>  $query
-     * @return \Illuminate\Database\Eloquent\Builder<WalletOwner>
+     * @param  Builder<WalletOwner>  $query
+     * @return Builder<WalletOwner>
      */
-    public function scopeForTenant(\Illuminate\Database\Eloquent\Builder $query, ?int $tenantId): \Illuminate\Database\Eloquent\Builder
+    public function scopeForTenant(Builder $query, ?int $tenantId): Builder
     {
         return $query->where('tenant_id', $tenantId);
     }

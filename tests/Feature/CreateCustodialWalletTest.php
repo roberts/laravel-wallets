@@ -184,7 +184,7 @@ describe('Create Custodial Wallet', function () {
                     owner: $this->user,
                     tenantId: $this->tenantId
                 );
-            })->toThrow(\ValueError::class); // Protocol::from throws ValueError for invalid values
+            })->toThrow(ValueError::class); // Protocol::from throws ValueError for invalid values
         });
 
         it('creates wallet relationships properly', function () {

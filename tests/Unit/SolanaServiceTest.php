@@ -1,17 +1,18 @@
 <?php
 
+use Illuminate\Support\Collection;
 use Roberts\LaravelWallets\Protocols\Solana\RpcClient;
 use Roberts\LaravelWallets\Protocols\Solana\RpcException;
 use Roberts\LaravelWallets\Services\Solana\SolanaService;
 
 describe('Solana Service', function () {
     beforeEach(function () {
-        $this->mockRpcClient = \Mockery::mock(RpcClient::class);
+        $this->mockRpcClient = Mockery::mock(RpcClient::class);
         $this->solanaService = new SolanaService($this->mockRpcClient);
     });
 
     afterEach(function () {
-        \Mockery::close();
+        Mockery::close();
     });
 
     describe('Account Details', function () {
@@ -96,7 +97,7 @@ describe('Solana Service', function () {
 
             $result = $this->solanaService->getTokenAccountsForOwner($ownerPubkey);
 
-            expect($result)->toBeInstanceOf(\Illuminate\Support\Collection::class)
+            expect($result)->toBeInstanceOf(Collection::class)
                 ->and($result)->toHaveCount(1)
                 ->and($result->first()['pubkey'])->toBe('TokenAccount1')
                 ->and($result->first()['mint'])->toBe('TokenMint1')
@@ -113,7 +114,7 @@ describe('Solana Service', function () {
 
             $result = $this->solanaService->getTokenAccountsForOwner($ownerPubkey);
 
-            expect($result)->toBeInstanceOf(\Illuminate\Support\Collection::class)
+            expect($result)->toBeInstanceOf(Collection::class)
                 ->and($result)->toHaveCount(0);
         });
     });
@@ -148,7 +149,7 @@ describe('Solana Service', function () {
 
             $result = $this->solanaService->getTransactionHistory($address, $limit);
 
-            expect($result)->toBeInstanceOf(\Illuminate\Support\Collection::class)
+            expect($result)->toBeInstanceOf(Collection::class)
                 ->and($result)->toHaveCount(2)
                 ->and($result->first()['signature'])->toBe('Signature1')
                 ->and($result->first()['slot'])->toBe(123456)

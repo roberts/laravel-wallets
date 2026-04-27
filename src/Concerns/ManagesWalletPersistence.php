@@ -3,6 +3,7 @@
 namespace Roberts\LaravelWallets\Concerns;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use Roberts\LaravelWallets\Enums\Protocol;
 use Roberts\LaravelWallets\Models\Wallet;
 use Roberts\LaravelWallets\Models\WalletOwner;
@@ -23,7 +24,7 @@ trait ManagesWalletPersistence
         Protocol $protocol,
         string $address,
         string $privateKey,
-        \Illuminate\Database\Eloquent\Model $owner,
+        Model $owner,
         int $tenantId,
         array $metadata = []
     ): array {
@@ -87,9 +88,9 @@ trait ManagesWalletPersistence
     /**
      * Get all wallets owned by a specific owner in a tenant.
      *
-     * @return \Illuminate\Support\Collection<int, WalletOwner>
+     * @return Collection<int, WalletOwner>
      */
-    protected static function getWalletsForOwner(Model $owner, int $tenantId, ?Protocol $protocol = null): \Illuminate\Support\Collection
+    protected static function getWalletsForOwner(Model $owner, int $tenantId, ?Protocol $protocol = null): Collection
     {
         /** @var mixed $ownerId */
         $ownerId = $owner->getKey();

@@ -2,9 +2,12 @@
 
 namespace Roberts\LaravelWallets\Tests;
 
+use Database\Seeders\EthChainSeeder;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User;
 use Orchestra\Testbench\TestCase as Orchestra;
+use Roberts\LaravelWallets\Concerns\HasWallets;
 use Roberts\LaravelWallets\WalletsServiceProvider;
 
 class TestCase extends Orchestra
@@ -19,7 +22,7 @@ class TestCase extends Orchestra
 
         // Seed the eth chains
         include_once __DIR__.'/../database/seeders/EthChainSeeder.php';
-        $seeder = new \Database\Seeders\EthChainSeeder;
+        $seeder = new EthChainSeeder;
         $seeder->run();
     }
 
@@ -87,10 +90,10 @@ class TestCase extends Orchestra
     }
 }
 
-class TestUser extends \Illuminate\Foundation\Auth\User
+class TestUser extends User
 {
     use HasFactory;
-    use \Roberts\LaravelWallets\Concerns\HasWallets;
+    use HasWallets;
 
     protected $table = 'users';
 
@@ -110,7 +113,7 @@ class TestUser extends \Illuminate\Foundation\Auth\User
 
     protected static function newFactory()
     {
-        return new class extends \Illuminate\Database\Eloquent\Factories\Factory
+        return new class extends Factory
         {
             protected $model = TestUser::class;
 

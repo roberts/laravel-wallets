@@ -1,5 +1,7 @@
 <?php
 
+use Roberts\LaravelWallets\Protocols\Ethereum\WalletAdapter;
+
 // config for Roberts/LaravelWallets
 return [
 
@@ -30,14 +32,14 @@ return [
 
     'drivers' => [
         'eth' => [
-            'adapter' => \Roberts\LaravelWallets\Protocols\Ethereum\WalletAdapter::class,
+            'adapter' => WalletAdapter::class,
             'rpc_url' => 'https://mainnet.infura.io/v3/your-project-id',
             'testnet_rpc_url' => 'https://sepolia.infura.io/v3/your-project-id',
             'use_testnet' => false,
         ],
 
         'sol' => [
-            'adapter' => \Roberts\LaravelWallets\Protocols\Solana\WalletAdapter::class,
+            'adapter' => Roberts\LaravelWallets\Protocols\Solana\WalletAdapter::class,
             'rpc_url' => 'https://api.mainnet-beta.solana.com',
             'testnet_rpc_url' => 'https://api.testnet.solana.com',
             'use_testnet' => false,

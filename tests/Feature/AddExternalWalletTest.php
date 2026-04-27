@@ -103,7 +103,7 @@ describe('Add External Wallet', function () {
             address: 'invalid-address',
             owner: $user,
             tenantId: 1
-        ))->toThrow(\InvalidArgumentException::class, 'Invalid Ethereum address format');
+        ))->toThrow(InvalidArgumentException::class, 'Invalid Ethereum address format');
     });
 
     it('validates solana address format', function () {
@@ -115,6 +115,6 @@ describe('Add External Wallet', function () {
             address: '0x742d35Cc69fF8D7aFF6C13Ac43Ca6d4BFEa77Eee', // ETH address for SOL protocol
             owner: $user,
             tenantId: 1
-        ))->toThrow(\InvalidArgumentException::class, 'Invalid Solana address format');
+        ))->toThrow(InvalidArgumentException::class, 'Invalid Solana address format');
     });
 });
