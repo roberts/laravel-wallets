@@ -16,6 +16,7 @@ class WalletFactory extends Factory
 
     public function definition(): array
     {
+        /** @var \Roberts\LaravelWallets\Enums\Protocol $protocol */
         $protocol = $this->faker->randomElement(Protocol::cases());
 
         // Generate appropriate address for protocol
